@@ -243,6 +243,14 @@ export class LAppLive2DManager {
         this.nextScene();
         break;
 
+      case 'v':
+      // V키: 보컬 오디오 재생 + 립싱크
+      model.startVoice('voices/vocals.wav');
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage('[APP]Keyboard: Play Voice with Lip Sync');
+      }
+      break;
+
       default:
         // 기타 키는 무시
         break;
