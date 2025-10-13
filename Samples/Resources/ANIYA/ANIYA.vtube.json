@@ -410,7 +410,7 @@
             "HotkeyID": "1e3edc6b904f406286e446c2744942e6",
             "Name": "手势（仅在常服时出现）",
             "Action": "ToggleExpression",
-            "File": "0.exp3.json",
+            "File": "hand_gesture.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -479,7 +479,7 @@
             "HotkeyID": "be75ab5526944aba96f0d6b6b50da019",
             "Name": "哭哭",
             "Action": "ToggleExpression",
-            "File": "1.exp3.json",
+            "File": "crying.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -548,7 +548,7 @@
             "HotkeyID": "9d614a72a6c445debce2c9f656711def",
             "Name": "震惊",
             "Action": "ToggleExpression",
-            "File": "2.exp3.json",
+            "File": "shocked.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -617,7 +617,7 @@
             "HotkeyID": "8a20c0001f1c4438b5cf4544c9adb4e7",
             "Name": "经典表情",
             "Action": "ToggleExpression",
-            "File": "3.exp3.json",
+            "File": "heh_face.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -686,7 +686,7 @@
             "HotkeyID": "ece4a96065624cb2823d5d483562db98",
             "Name": "？",
             "Action": "ToggleExpression",
-            "File": "4.exp3.json",
+            "File": "question.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -755,7 +755,7 @@
             "HotkeyID": "db4f13e0674a479590757e4a36d45777",
             "Name": "星星眼",
             "Action": "ToggleExpression",
-            "File": "5.exp3.json",
+            "File": "starry_eyes.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -824,7 +824,7 @@
             "HotkeyID": "176ba37bd03247aabc6d61e58728ede3",
             "Name": "生气",
             "Action": "ToggleExpression",
-            "File": "6.exp3.json",
+            "File": "angry.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -893,7 +893,7 @@
             "HotkeyID": "399f25ae41d440a0a051f96776770823",
             "Name": "无语",
             "Action": "ToggleExpression",
-            "File": "7.exp3.json",
+            "File": "speechless.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -962,7 +962,7 @@
             "HotkeyID": "53df89910cee4569b02b9657ccbc6e7d",
             "Name": "震惊2",
             "Action": "ToggleExpression",
-            "File": "8.exp3.json",
+            "File": "startled.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1031,7 +1031,7 @@
             "HotkeyID": "0f5bfb07264e4320a6cbead2bae3a156",
             "Name": "衣服出现（无动画）",
             "Action": "ToggleExpression",
-            "File": "9.exp3.json",
+            "File": "show_clothes.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1169,7 +1169,7 @@
             "HotkeyID": "7e34b794f9444ffcab6b683835a5d8ea",
             "Name": "大哭",
             "Action": "ToggleExpression",
-            "File": "W.exp3.json",
+            "File": "wailing.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1376,7 +1376,7 @@
             "HotkeyID": "91cd04e8132e4e48b08644b15644742c",
             "Name": "变花生（无动画）",
             "Action": "ToggleExpression",
-            "File": "t.exp3.json",
+            "File": "peanut_mode.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1445,7 +1445,7 @@
             "HotkeyID": "6d9ba906958145b1a7d3e998781fc1e9",
             "Name": "小眼珠",
             "Action": "ToggleExpression",
-            "File": "u.exp3.json",
+            "File": "small_pupils.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1514,7 +1514,7 @@
             "HotkeyID": "d45dcd98eec64bfc8e52db1f4f2ff57a",
             "Name": "呲牙",
             "Action": "ToggleExpression",
-            "File": "y.exp3.json",
+            "File": "grin.exp3.json",
             "Folder": "",
             "Position": {
                 "X": 0.0,
@@ -1559,6 +1559,75 @@
             },
             "Triggers": {
                 "Trigger1": "Y",
+                "Trigger2": "",
+                "Trigger3": "",
+                "ScreenButton": -1
+            },
+            "IsGlobal": true,
+            "IsActive": true,
+            "Minimized": true,
+            "StopsOnLastFrame": false,
+            "DeactivateAfterKeyUp": false,
+            "OnlyLoadOneRandomItem": false,
+            "DeactivateAfterSeconds": false,
+            "DeactivateAfterSecondsAmount": 10.0,
+            "FadeSecondsAmount": 0.5,
+            "OnScreenHotkeyColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            }
+        },
+        {
+            "HotkeyID": "091872091840589175qwrqetw",
+            "Name": "기본 얼굴",
+            "Action": "ToggleExpression",
+            "File": "neutral.exp3.json",
+            "Folder": "",
+            "Position": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0,
+                "Rotation": 0.0
+            },
+            "ColorOverlay": {
+                "On": false,
+                "IsStaticColor": false,
+                "Display": -1,
+                "WindowName": "",
+                "IncludeLeft": false,
+                "IncludeMid": false,
+                "IncludeRight": false,
+                "BaseValue": 0,
+                "OverlayValue": 0,
+                "Smoothing": 0,
+                "IncludeItems": false,
+                "StaticColor": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                }
+            },
+            "ColorScreenMultiplyPreset": {
+                "ArtMeshMultiplyAndScreenColors": []
+            },
+            "HandGestureSettings": {
+                "GestureLeft": "",
+                "GestureRight": "",
+                "GestureCombinator": "AND",
+                "AllowMirroredGesture": false,
+                "DeactivateExpWhenGestureNotDetected": false,
+                "SecondsUntilDetection": 0.5,
+                "SecondsDetected": 0.0,
+                "PercentDetected": 0.0
+            },
+            "LoadModelSettings": {
+                "LoadAtCurrentPosition": true
+            },
+            "Triggers": {
+                "Trigger1": "C",
                 "Trigger2": "",
                 "Trigger3": "",
                 "ScreenButton": -1

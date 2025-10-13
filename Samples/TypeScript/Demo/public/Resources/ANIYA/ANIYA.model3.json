@@ -15,58 +15,61 @@
 		"Expressions": [
 			{
 				"Name": "exp_01",
-				"File": "expressions/0.exp3.json"
+				"File": "expressions/hand_gesture.exp3.json"
 			},
 			{
 				"Name": "exp_02",
-				"File": "expressions/1.exp3.json"
+				"File": "expressions/crying.exp3.json"
 			},
 			{
 				"Name": "exp_03",
-				"File": "expressions/2.exp3.json"
+				"File": "expressions/shocked.exp3.json"
 			},
 			{
 				"Name": "exp_04",
-				"File": "expressions/3.exp3.json"
+				"File": "expressions/heh_face.exp3.json"
 			},
 			{
 				"Name": "exp_05",
-				"File": "expressions/4.exp3.json"
+				"File": "expressions/question.exp3.json"
 			},
 			{
 				"Name": "exp_06",
-				"File": "expressions/5.exp3.json"
+				"File": "expressions/starry_eyes.exp3.json"
 			},
 			{
 				"Name": "exp_07",
-				"File": "expressions/6.exp3.json"
+				"File": "expressions/angry.exp3.json"
 			},
 			{
 				"Name": "exp_08",
-				"File": "expressions/7.exp3.json"
+				"File": "expressions/speechless.exp3.json"
 			},
 			{
 				"Name": "exp_09",
-				"File": "expressions/8.exp3.json"
+				"File": "expressions/startled.exp3.json"
 			},
 			{
 				"Name": "exp_10",
-				"File": "expressions/9.exp3.json"
+				"File": "expressions/show_clothes.exp3.json"
 			},
 			{
 				"Name": "exp_t",
-				"File": "expressions/t.exp3.json"
+				"File": "expressions/peanut_mode.exp3.json"
 			},
 			{
 				"Name": "exp_u",
-				"File": "expressions/u.exp3.json"
+				"File": "expressions/small_pupils.exp3.json"
 			},
 			{
 				"Name": "exp_W",
-				"File": "expressions/W.exp3.json"
+				"File": "expressions/wailing.exp3.json"
 			},{
 				"Name": "exp_y",
-				"File": "expressions/y.exp3.json"
+				"File": "expressions/grin.exp3.json"
+			},{
+				"Name": "exp_c",
+				"File": "expressions/neutral.exp3.json"
 			}
 		],
 		"Motions": {

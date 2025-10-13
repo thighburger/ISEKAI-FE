@@ -198,20 +198,83 @@ export class LAppLive2DManager {
   /**
    * 키보드 입력 처리
    */
+// 수정중
   public onKeyDown(key: string): void {
     const model: LAppModel = this._models.at(0);
 
     if (!model) return;
 
     switch (key.toLowerCase()) {
-      case 'e':
-        // E키: 랜덤 표정
-        model.setRandomExpression();
-        if (LAppDefine.DebugLogEnable) {
-          LAppPal.printMessage('[APP]Keyboard: Random Expression');
-        }
+      // '1' 키로 '0.exp3.json' 파일의 표정을 재생하려면
+      case '1':
+        model.setExpression('exp_01'); // "Name"인 "exp_01"을 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_01');
+        break;
+      // '2' 키로 '1.exp3.json' 파일의 표정을 재생하려면
+      case '2':
+        model.setExpression('exp_02'); // "Name"인 "exp_02"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_02');
+        break;
+      // '3' 키로 '3.exp3.json' 파일의 표정을 재생하려면
+      case '3':
+        model.setExpression('exp_03'); // "Name"인 "exp_03"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_03');
+        break;
+      // '4' 키로 '4.exp3.json' 파일의 표정을 재생하려면
+      case '4':
+        model.setExpression('exp_04'); // "Name"인 "exp_04"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_04');
+        break;
+      // '5' 키로 '5.exp3.json' 파일의 표정을 재생하려면
+      case '5':
+        model.setExpression('exp_05'); // "Name"인 "exp_05"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_05');
+        break;
+      case '6':
+        model.setExpression('exp_06'); // "Name"인 "exp_06"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_06');
+        break;
+      case '7':
+        model.setExpression('exp_07'); // "Name"인 "exp_07"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_07');
+        break;
+      case '8':
+        model.setExpression('exp_08'); // "Name"인 "exp_08"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_08');
+        break;
+      case '9':
+        model.setExpression('exp_09'); // "Name"인 "exp_09"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_09');
+        break;
+      case '0':
+        model.setExpression('exp_10'); // "Name"인 "exp_10"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_10');
+        break;
+      // 't' 키로 't.exp3.json' 파일의 표정을 재생하려면
+      case 't':
+        model.setExpression('exp_t'); // "Name"인 "exp_t"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_t');
+        break;
+      case 'u':
+        model.setExpression('exp_u'); // "Name"인 "exp_u"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_u');
+        break;
+      case 'w':
+        model.setExpression('exp_W'); // "Name"인 "exp_W"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_w');
+        break;
+      case 'y':
+        model.setExpression('exp_y'); // "Name"인 "exp_y"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_y');
+        break;
+      case 'c':
+        model.setExpression('exp_c'); // "Name"인 "exp_c"를 사용
+        LAppPal.printMessage('[APP]Keyboard: Expression exp_c');
         break;
 
+
+
+// 수정중   
       case 'm':
         // M키: 랜덤 바디 모션
         model.startRandomMotion(
