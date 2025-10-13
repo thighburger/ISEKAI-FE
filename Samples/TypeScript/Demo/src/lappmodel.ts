@@ -573,8 +573,11 @@ export class LAppModel extends CubismUserModel {
       this._wavFileHandler.update(deltaTimeSeconds);
       value = this._wavFileHandler.getRms();
 
+      value = Math.sqrt(value) * 1.5;
+      value = Math.min(value, 1.0);
+
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
-        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 0.8);
+        this._model.addParameterValueById(this._lipSyncIds.at(i), value, 1.0);
       }
     }
 
@@ -932,6 +935,43 @@ export class LAppModel extends CubismUserModel {
   }
 
   /**
+   * 음성 파일을 재생하고 립싱크를 시작한다
+   * @param voiceFileName 음성 파일 경로 (모델 디렉토리 기준 상대 경로)
+   */
+  public startVoice(voiceFileName: string): void {
+    const voicePath = `${this._modelHomeDir}${voiceFileName}`;
+    console.log(voicePath);
+    if (this._debugMode) {
+      LAppPal.printMessage(`[APP]start voice: ${voicePath}`);
+    }
+    
+    this._wavFileHandler.start(voicePath);
+    this.playAudio(voicePath);
+    
+  }
+
+    /**
+   * オーディオを実際に再生する
+   * @param audioPath オーディオファイルのパス
+   */
+  private playAudio(audioPath: string): void {
+    // 기존 오디오가 재생 중이면 정지
+    if (this._audio) {
+      this._audio.pause();
+      this._audio = null;
+    }
+    
+    // 새 오디오 재생
+    this._audio = new Audio(audioPath);
+    this._audio.play().catch(error => {
+      LAppPal.printMessage(`[APP]Audio play error: ${error}`);
+    });
+    
+    if (this._debugMode) {
+      LAppPal.printMessage(`[APP]Playing audio: ${audioPath}`);
+    }
+  }
+  /**
    * 생성자
    */
   public constructor() {
@@ -1015,4 +1055,5 @@ export class LAppModel extends CubismUserModel {
   _allMotionCount: number; // モーション総数
   _wavFileHandler: LAppWavFileHandler; //wavファイルハンドラ
   _consistency: boolean; // MOC3整合性チェック管理用
+  private _audio: HTMLAudioElement | null = null; 
 }
