@@ -192,9 +192,38 @@ export class LAppDelegate {
     this.initializeSubdelegates();
     this.initializeEventListener();
 
+    this.initializeEmotionInput(); // 감정 입력창 초기화 로직 호출
     return true;
   }
+  /**
+   * 감정 입력창의 이벤트를 설정합니다.
+   */
+  private initializeEmotionInput(): void {
+    const inputElement = document.getElementById('emotion-input') as HTMLInputElement;
 
+    if (inputElement) {
+      inputElement.addEventListener('keydown', (e: KeyboardEvent) => {
+        // Enter 키를 눌렀고, 입력값이 비어있지 않을 때
+        if (e.key === 'Enter' && inputElement.value.trim() !== '') {
+          const emotionKeyword = inputElement.value.trim();
+
+          // Live2D 매니저를 가져옵니다.
+          const live2DManager = this._subdelegates.at(0)?.getLive2DManager();
+          if (live2DManager) {
+            // Live2D 매니저의 메서드를 호출하여 감정 표현과 채팅을 동시에 실행합니다.
+            live2DManager.startChatWithEmotion(
+              '아냐', // 이름
+              `"${emotionKeyword}" 표정을 지었다!`, // 표시할 메시지
+              emotionKeyword // 사용자가 입력한 감정 키워드
+            );
+          }
+
+          // 입력창을 비웁니다.
+          inputElement.value = '';
+        }
+      });
+    }
+  }
   /**
    * 이벤트 리스너를 설정하십시오.
    */
@@ -221,20 +250,6 @@ export class LAppDelegate {
     // 키보드 이벤트 추가
     this.keyDownEventListener = this.onKeyDown.bind(this);
 
-    // 이벤트 등록
-    document.addEventListener('pointerdown', this.pointBeganEventListener, {
-      passive: true
-    });
-    document.addEventListener('pointermove', this.pointMovedEventListener, {
-      passive: true
-    });
-    document.addEventListener('pointerup', this.pointEndedEventListener, {
-      passive: true
-    });
-    document.addEventListener('pointercancel', this.pointCancelEventListener, {
-      passive: true
-    });
-
     // 키보드 이벤트 등록
     document.addEventListener('keydown', this.keyDownEventListener, {
       passive: true
@@ -260,39 +275,31 @@ export class LAppDelegate {
    * 캔버스를 생성하고 하위 방향을 초기화하십시오
    */
   private initializeSubdelegates(): void {
-    let width: number = 100;
-    let height: number = 100;
-    if (LAppDefine.CanvasNum > 3) {
-      const widthunit: number = Math.ceil(Math.sqrt(LAppDefine.CanvasNum));
-      const heightUnit = Math.ceil(LAppDefine.CanvasNum / widthunit);
-      width = 100.0 / widthunit;
-      height = 100.0 / heightUnit;
-    } else {
-      width = 100.0 / LAppDefine.CanvasNum;
+    const container = document.getElementById('live2d-container');
+
+    if (!container) {
+      console.error('live2d-container not found!');
+      return;
     }
 
     this._canvases.prepareCapacity(LAppDefine.CanvasNum);
     this._subdelegates.prepareCapacity(LAppDefine.CanvasNum);
+
     for (let i = 0; i < LAppDefine.CanvasNum; i++) {
+      // 1. 캔버스를 만들어서 container에 추가
       const canvas = document.createElement('canvas');
       this._canvases.pushBack(canvas);
-      canvas.style.width = `${width}vw`;
-      canvas.style.height = `${height}vh`;
+      container.appendChild(canvas);
 
-      // dom에 캔버스를 추가합니다
-      document.body.appendChild(canvas);
-    }
-
-    for (let i = 0; i < this._canvases.getSize(); i++) {
+      // 2. subdelegate를 만들고 초기화
       const subdelegate = new LAppSubdelegate();
       subdelegate.initialize(this._canvases.at(i));
       this._subdelegates.pushBack(subdelegate);
-    }
 
-    for (let i = 0; i < LAppDefine.CanvasNum; i++) {
-      if (this._subdelegates.at(i).isContextLost()) {
+      // 3. WebGL 컨텍스트 유실 여부 확인
+      if (subdelegate.isContextLost()) {
         CubismLogError(
-          `The context for Canvas at index ${i} was lost, possibly because the acquisition limit for WebGLRenderingContext was reached.`
+          `The context for Canvas at index ${i} was lost.`
         );
       }
     }
@@ -309,6 +316,20 @@ export class LAppDelegate {
 
   private keyDownEventListener: (this: Document, ev: KeyboardEvent) => void;
   private onKeyDown(e: KeyboardEvent): void {
+    // 추가
+    if (e.key.toLowerCase() === 'd') {
+      // 모든 뷰(캔버스)에 채팅 메시지를 표시합니다.
+      for (
+        let ite = this._subdelegates.begin();
+        ite.notEqual(this._subdelegates.end());
+        ite.preIncrement()
+      ) {
+        // 여기에 원하는 이름과 메시지를 넣으세요.
+        ite.ptr().getView().showChatMessage('아냐', '동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세');
+      }
+      return; // 다른 키 이벤트가 있다면 중복 실행 방지
+    }
+    // 추가
     for (
       let ite = this._subdelegates.begin();
       ite.notEqual(this._subdelegates.end());

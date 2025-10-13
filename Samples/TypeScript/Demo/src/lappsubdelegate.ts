@@ -93,7 +93,9 @@ export class LAppSubdelegate {
 
     return true;
   }
-
+  public getView(): LAppView {
+    return this._view;
+  }
   /**
    * 캔버스 크기를 조정하고보기를 다시 시작하십시오.
    */

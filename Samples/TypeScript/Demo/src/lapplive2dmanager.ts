@@ -22,8 +22,8 @@ import { LAppSubdelegate } from './lappsubdelegate';
 const emotionMap: { [key: string]: string } = {
   // --- 긍정적인 감정 ---
   "두근두근": "exp_06",     // starry_eyes: 반짝이는 별눈, 가장 강한 긍정 표현
-  "씨익웃음": "exp_y",      // grin: 이를 드러내고 활짝 웃는 표정
-  "음흉웃음": "exp_04",     // heh_face: '흥'하는 듯한 만족스러운 표정
+  "씨익": "exp_y",      // grin: 이를 드러내고 활짝 웃는 표정
+  "음흉": "exp_04",     // heh_face: '흥'하는 듯한 만족스러운 표정
 
   // --- 부정적인 감정 ---
   "슬픔": "exp_02",     // crying: 눈물이 그렁그렁한 표정
@@ -50,6 +50,39 @@ const emotionMap: { [key: string]: string } = {
  * 모델을 생성 및 폐기하고, 탭 이벤트를 처리하며, 모델을 스위치하십시오.
  */
 export class LAppLive2DManager {
+  // ▼▼▼ 이 메서드를 클래스 내부에 추가합니다 ▼▼▼
+  /**
+   * 지정된 감정(표정)으로 채팅 메시지를 시작합니다.
+   * AI 연동을 위한 핵심 기능입니다.
+   * @param name - 표시할 캐릭터 이름
+   * @param message - 표시할 메시지
+   * @param emotion - emotionMap에 정의된 감정 키워드 (예: "슬픔")
+   */
+  public startChatWithEmotion(name: string, message: string, emotion: string): void {
+    const model: LAppModel = this._models.at(0);
+    if (!model) {
+      return;
+    }
+
+    // 1. emotionMap에서 감정 키워드에 해당하는 표정 파일 이름을 찾습니다.
+    const expressionName = emotionMap[emotion];
+
+    // 2. 해당하는 표정이 있으면 모델에 적용하고, 없으면 랜덤 표정을 짓습니다.
+    if (expressionName) {
+      model.setExpression(expressionName);
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage(`[APP] Emotion: "${emotion}" -> Expression: "${expressionName}"`);
+      }
+    } else {
+      model.setRandomExpression(); // 맵에 없는 키워드면 랜덤 표정
+      if (LAppDefine.DebugLogEnable) {
+        LAppPal.printMessage(`[APP] Emotion: "${emotion}" not found. Setting random expression.`);
+      }
+    }
+
+    // 3. View의 채팅바에 이름과 메시지를 표시합니다.
+    this._subdelegate.getView().showChatMessage(name, message);
+  }
   /**
    * 현재 장면에서 보관 된 모든 모델을 무료로 제공합니다
    */
