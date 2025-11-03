@@ -4,13 +4,13 @@
  *이 소스 코드 사용은 Live2D Open 소프트웨어 라이센스에 의해 관리됩니다.
  * https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html에서 찾을 수 있습니다.
  */
-
 import { csmVector } from '@framework/type/csmvector';
 import { CubismFramework, Option } from '@framework/live2dcubismframework';
 import * as LAppDefine from './lappdefine';
 import { LAppPal } from './lapppal';
 import { LAppSubdelegate } from './lappsubdelegate';
 import { CubismLogError } from '@framework/utils/cubismdebug';
+import { WebSocketManager } from './websocket/websocketmanager';
 
 export let s_instance: LAppDelegate = null;
 
@@ -136,6 +136,11 @@ export class LAppDelegate {
     this.releaseEventListener();
     this.releaseSubdelegates();
 
+    if (this._webSocketManager) {
+      this._webSocketManager.dispose();
+      this._webSocketManager = null;
+    }
+
     // 입체파 SDK를 릴리스합니다
     CubismFramework.dispose();
 
@@ -193,6 +198,7 @@ export class LAppDelegate {
     this.initializeEventListener();
 
     this.initializeEmotionInput(); // 감정 입력창 초기화 로직 호출
+    this.initializeWebSocket(); // 웹소켓 초기화 로직 호출
     return true;
   }
   /**
@@ -373,4 +379,27 @@ export class LAppDelegate {
    * 등록 된 이벤트 리스너 기능 개체
    */
   private pointCancelEventListener: (this: Document, ev: PointerEvent) => void;
+
+  private _webSocketManager: WebSocketManager | null = null;
+
+  /**
+   * 웹소켓 자동 초기화
+   */
+  private async initializeWebSocket(): Promise<void> {
+    // 백엔드 WebSocket 서버 주소 (환경에 맞게 변경)
+    const WS_SERVER_URL = 'ws://localhost:8080/audio';
+
+    try {
+      console.log('[App] WebSocket 연결 시작...');
+      this._webSocketManager = new WebSocketManager(WS_SERVER_URL);
+      await this._webSocketManager.initialize();
+      console.log('[App] 실시간 음성 스트리밍 활성화됨');
+    } catch (error) {
+      console.error('[App] WebSocket 초기화 실패:', error);
+      // 마이크 권한 거부 등의 에러 처리
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        alert('마이크 접근 권한이 필요합니다. 브라우저 설정에서 마이크를 허용해주세요.');
+      }
+    }
+  }
 }
