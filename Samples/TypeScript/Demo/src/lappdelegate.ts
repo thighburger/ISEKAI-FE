@@ -18,7 +18,7 @@ export let s_instance: LAppDelegate = null;
  * 응용 프로그램 클래스.
  * Cubism SDK 관리.
  */
-export class LAppDelegate {
+export class LAppDelegate { 
   /**
    * 클래스의 인스턴스 (싱글 톤)를 반환합니다.
    * 인스턴스가 생성되지 않으면 내부적으로 인스턴스를 만듭니다.
@@ -386,8 +386,7 @@ export class LAppDelegate {
    * 웹소켓 자동 초기화
    */
   private async initializeWebSocket(): Promise<void> {
-    // 백엔드 WebSocket 서버 주소 (환경에 맞게 변경)
-    const WS_SERVER_URL = 'ws://localhost:8080/audio';
+    const WS_SERVER_URL = import.meta.env.VITE_WS_SERVER_URL;
 
     try {
       console.log('[App] WebSocket 연결 시작...');
