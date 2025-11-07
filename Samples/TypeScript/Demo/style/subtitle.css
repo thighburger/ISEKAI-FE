@@ -1,3 +1,26 @@
+/* 넷마블 폰트 Light (가장 얇은 굵기) */
+@font-face {
+  font-family: 'Netmarble'; /* 폰트 패밀리 이름은 하나로 통일 */
+  src: url('./fonts/netmarble_font/netmarbleL.ttf') format('truetype');
+  font-weight: 300; /* Light 굵기 (일반적으로 300) */
+  font-style: normal;
+}
+
+/* 넷마블 폰트 Medium (기본 굵기) */
+@font-face {
+  font-family: 'Netmarble'; /* 폰트 패밀리 이름은 하나로 통일 */
+  src: url('./fonts/netmarble_font/netmarbleM.ttf') format('truetype');
+  font-weight: 500; /* Medium 굵기 (일반적으로 500 또는 normal) */
+  font-style: normal;
+}
+
+/* 넷마블 폰트 Bold (가장 두꺼운 굵기) */
+@font-face {
+  font-family: 'Netmarble'; /* 폰트 패밀리 이름은 하나로 통일 */
+  src: url('./fonts/netmarble_font/netmarbleB.ttf') format('truetype');
+  font-weight: 700; /* Bold 굵기 (일반적으로 700 또는 bold) */
+  font-style: normal;
+}
 /* 자막 컨테이너 기본 스타일 */
 #subtitle-container {
   position: absolute; /* live2d-container를 기준으로 위치 설정 */
@@ -10,11 +33,11 @@
   background-color: rgba(255, 255, 255, 0.9); /* 반투명 흰색 배경 */
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  padding: 20px;
+  padding: 30px 25px 20px 25px; 
   box-sizing: border-box;
   opacity: 1;
   transition: opacity 0.3s ease-in-out; /* 부드러운 등장/사라짐 효과 */
-  font-family: 'Malgun Gothic', sans-serif; /* 폰트 설정 */
+  font-family: 'Netmarble', sans-serif; /* 폰트 설정 */
   z-index: 10; /* 캔버스 위에 보이도록 설정 */
 }
 
@@ -26,15 +49,20 @@
 
 /* 캐릭터 이름 스타일 */
 #charactor-name {
-  font-weight: bold;
-  font-size: 1.3em;
-  margin-bottom: 10px;
+  position: absolute;
+  top: 0;
+  left: 25px;
+  transform: translateY(-50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius:20px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 11;
+  font-weight:700;
+  font-size:1.1em;
   color: #333;
-  /* 이름 앞에 파란색 동그라미 아이콘 추가 */
-  display: flex;
-  align-items: center;
 }
-
 #charactor-name::before {
     content: '';
     display: inline-block;
@@ -45,12 +73,12 @@
     margin-right: 10px;
 }
 
-
 /* 자막 메시지 스타일 */
 #subtitle-message {
   font-size: 1.1em;
   color: #555;
   line-height: 1.5;
+  font-weight:500;
 }
 
 /* 입력창 컨테이너 스타일 */
