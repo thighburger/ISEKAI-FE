@@ -323,25 +323,24 @@ export class LAppDelegate {
 
   private keyDownEventListener: (this: Document, ev: KeyboardEvent) => void;
   private onKeyDown(e: KeyboardEvent): void {
-    // 추가
+    // 1. 'd' 키 (App 레벨의 UI 토글)를 먼저 처리합니다.
     if (e.key.toLowerCase() === 'd') {
-      // 모든 뷰(캔버스)에 채팅 메시지를 표시합니다.
+      
       for (
         let ite = this._subdelegates.begin();
         ite.notEqual(this._subdelegates.end());
         ite.preIncrement()
       ) {
-        const live2DManager = ite.ptr().getLive2DManager();
-        const modelName = live2DManager
-          ? live2DManager.getCurrentModelDisplayName()
-          : 'Unknown'; // 매니저가 없는 경우 대비
-
-        // 여기에 원하는 이름과 메시지를 넣으세요.
-        ite.ptr().getView().showSubtitleMessage(modelName, '동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세');
+        // LAppView를 직접 가져와서 토글 명령을 내립니다.
+        const view = ite.ptr().getView();
+        if (view) {
+          view.toggleSubtitle();
+        }
       }
-      return; // 다른 키 이벤트가 있다면 중복 실행 방지
+      return; // 'd' 키 처리는 여기서 종료 (Manager로 전달 안 함)
     }
-    // 추가
+
+    // 2. 'd'가 아닌 다른 모든 키 (모델 관련)는 Manager로 전달합니다.
     for (
       let ite = this._subdelegates.begin();
       ite.notEqual(this._subdelegates.end());

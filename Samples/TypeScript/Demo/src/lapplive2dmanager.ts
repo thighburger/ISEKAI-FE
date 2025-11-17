@@ -74,7 +74,6 @@ const modelConfigData: { [key: string]: ModelConfig } = {
 
     }
   },
-  // ▼▼▼ [HoshinoAi 설정 추가] ▼▼▼
   'HoshinoAi':{
     displayName: '호시노 아이',
     emotionMap:{
@@ -107,7 +106,6 @@ const modelConfigData: { [key: string]: ModelConfig } = {
       // 만약 추가하신다면 'v': 'voices/my_voice.wav' 처럼 설정하세요.
     }
   }
-  // ▲▲▲ [여기까지 추가] ▲▲▲
 }
 
 
@@ -154,6 +152,18 @@ export class LAppLive2DManager {
     // (이름은 LAppDelegate에서 getCurrentModelDisplayName()을 호출하여 전달할 것이므로 수정 필요 없음)
     this._subdelegate.getView().showSubtitleMessage(name, message);
   }
+
+  /**
+   * 감정(표정) 변경 없이 자막만 표시합니다.
+   * LAppDelegate에서 'd'키 테스트 등을 위해 호출합니다.
+   * @param name - 표시할 캐릭터 이름
+   * @param message - 표시할 메시지
+   */
+  public showSubtitleMessage(name: string, message: string): void {
+    // 뷰를 가져와서 자막 표시를 위임합니다.
+    this._subdelegate.getView().showSubtitleMessage(name, message);
+  }
+
   /**
    * 현재 장면에서 보관 된 모든 모델을 무료로 제공합니다
    */
@@ -263,14 +273,14 @@ export class LAppLive2DManager {
     const model: string = LAppDefine.ModelDir[index];
     const modelPath: string = LAppDefine.ResourcesPath + model + '/';
 
-    // ▼▼▼ [수정] 모델별로 .model3.json 파일 이름을 다르게 설정 ▼▼▼
+    // 모델별로 .model3.json 파일 이름을 다르게 설정
     let modelJsonName: string;
 
     if (model === 'HoshinoAi') {
       // HoshinoAi 모델의 경우
       modelJsonName = 'Hoshino_Ai.model3.json';
     } else {
-      // ANIYA 및 다른 모델의 경우 (기존 규칙)
+      // ANIYA 및 다른 모델의 경우
       modelJsonName = LAppDefine.ModelDir[index];
       modelJsonName += '.model3.json';
     }
@@ -280,6 +290,14 @@ export class LAppLive2DManager {
     instance.setSubdelegate(this._subdelegate);
     instance.loadAssets(modelPath, modelJsonName);
     this._models.pushBack(instance);
+
+    // 1. 현재 모델의 표시 이름을 가져옵니다.
+    const modelName = this.getCurrentModelDisplayName();
+    // 2. 원하는 메시지를 만듭니다.
+    const message = `안녕! 나는 ${modelName}야!`;
+    // 3. 자막바를 즉시 갱신합니다.
+    this.showSubtitleMessage(modelName, message);
+
   }
 
   public setViewMatrix(m: CubismMatrix44) {
@@ -339,7 +357,6 @@ export class LAppLive2DManager {
     LAppPal.printMessage('Motion Finished:');
     console.log(self);
   };
-  // ▼▼▼ [추가됨] 헬퍼 메서드 ▼▼▼
   /**
    * 현재 로드된 모델의 표시 이름(displayName)을 반환합니다.
    */
@@ -349,7 +366,6 @@ export class LAppLive2DManager {
     return config ? config.displayName : 'Unknown'; // 설정이 있으면 이름 반환, 없으면 'Unknown'
   }
 
-  // ▼▼▼ [수정됨] onKeyDown 메서드 전체 교체 ▼▼▼
   /**
    * 키보드 입력 처리 (modelConfigData 사용)
    */

@@ -257,7 +257,7 @@ export class LAppView {
       lapplive2dmanager.nextScene();
     }
   }
-
+  
   /**
    * X 좌표를 변환하여 좌표를 봅니다.
    *
@@ -309,6 +309,13 @@ export class LAppView {
    */
   public hideSubtitleMessage(): void {
       this._subtitleBar.hide();
+  }
+
+  /**
+   * 자막바의 보이기/숨기기 상태를 토글합니다.
+   */
+  public toggleSubtitle(): void {
+      this._subtitleBar.toggle();
   }
   
   _touchManager: TouchManager; // タッチマネージャー
