@@ -583,7 +583,15 @@ export class LAppModel extends CubismUserModel {
       this._wavFileHandler.update(deltaTimeSeconds);
       value = this._wavFileHandler.getRms();
 
-      value = Math.sqrt(value) * 1.5;
+      // WavFileHandler(로컬 파일) 재생 중이 아니면 WebSocket(스트리밍) 볼륨 확인
+      if (value <= 0.001) {
+        const wsManager = LAppDelegate.getInstance().getWebSocketManager();
+        if (wsManager) {
+          value = wsManager.getCurrentRms();
+        }
+      }
+
+      value = Math.sqrt(value) * 0.6;
       value = Math.min(value, 1.0);
 
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
