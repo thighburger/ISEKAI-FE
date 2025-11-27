@@ -406,7 +406,9 @@ export class LAppDelegate {
       }
     }
   }
-
+  /**
+   * 웹소켓 매니저 인스턴스를 반환합니다.
+   */
   public getWebSocketManager(): WebSocketManager | null {
     return this._webSocketManager;
   }

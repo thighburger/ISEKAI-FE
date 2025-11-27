@@ -9,6 +9,13 @@ export class WebSocketManager {
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
   private reconnectDelay: number = 3000;
+  private nextStartTime: number = 0;
+  private analyser: AnalyserNode | null = null;
+  private dataArray: Uint8Array | null = null;
+  
+  // 현재 오디오 설정 저장용 (첫 패킷에서 읽은 값 유지)
+  private currentChannels: number = 1;
+  private currentSampleRate: number = 24000;
 
   constructor(
     private serverUrl: string,
