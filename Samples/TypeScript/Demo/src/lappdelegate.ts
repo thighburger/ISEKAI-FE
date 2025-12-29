@@ -205,6 +205,7 @@ export class LAppDelegate {
    * 감정 입력창의 이벤트를 설정합니다.
    */
   private initializeEmotionInput(): void {
+    /*
     const inputElement = document.getElementById('emotion-input') as HTMLInputElement;
 
     if (inputElement) {
@@ -230,6 +231,7 @@ export class LAppDelegate {
         }
       });
     }
+    */
   }
   /**
    * 이벤트 리스너를 설정하십시오.
@@ -411,5 +413,11 @@ export class LAppDelegate {
    */
   public getWebSocketManager(): WebSocketManager | null {
     return this._webSocketManager;
+  }
+  public getLive2DManager(index: number = 0) {
+    return this._subdelegates.at(index)?.getLive2DManager();
+  }
+  public getView(index: number = 0): any {
+    return this._subdelegates.at(index)?.getView();
   }
 }

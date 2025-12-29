@@ -311,7 +311,7 @@ export class AudioStreamManager {
       return 0;
     }
 
-    this.analyser.getByteFrequencyData(this.dataArray);
+    this.analyser.getByteFrequencyData(this.dataArray as Uint8Array);
 
     let sum = 0;
     for (let i = 0; i < this.dataArray.length; i++) {

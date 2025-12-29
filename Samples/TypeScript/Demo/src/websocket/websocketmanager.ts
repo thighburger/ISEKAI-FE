@@ -150,22 +150,32 @@ export class WebSocketManager {
     try {
       const message = JSON.parse(data);
 
-      console.log('[WebSocket] 서버 응답:', message);
+      // 1. AI의 답변 자막 처리
       if (message.messageType === "SUBTITLE" && message.content?.text) {
         const subtitleText = message.content.text;
-        const appDelegate = LAppDelegate.getInstance()
-        // Live2D 매니저를 가져옵니다.
-        const live2DManager = appDelegate['_subdelegates'].at(0)?.getLive2DManager();
+        const live2DManager = LAppDelegate.getInstance().getLive2DManager();
         if (live2DManager) {
           const modelName = live2DManager.getCurrentModelDisplayName();
-
-          // 자막만 업데이트 (감정 표현 없이)
-          live2DManager.showSubtitleMessage(modelName, subtitleText);
+          live2DManager.showSubtitleMessage(modelName, subtitleText); // AI 말풍선 추가
         }
-      else{
-        console.log('[WebSocket] subtitle 객체가 정의되지 않았습니다.');
+      } 
+      
+      // 2. 추가: 내가 말한 음성 인식 결과(STT) 처리
+      // 서버에서 보내주는 메시지 구조에 맞춰 messageType을 확인합니다.
+      else if (message.messageType === "USER_STT" && message.content?.text) {
+        const userText = message.content.text;
+        const appDelegate = LAppDelegate.getInstance();
+        
+        // 에러가 나던 줄을 삭제하고 아래와 같이 수정합니다.
+        const view = appDelegate.getView(); // 1단계에서 만든 메서드 사용
+        
+        if (view) {
+          // LAppView에서 ChatManager를 가져와 사용자 메시지를 추가합니다.
+          view.getChatManager().addUserMessage(userText); 
+        } else {
+          console.warn('[WebSocket] View를 찾을 수 없어 사용자 메시지를 표시하지 못했습니다.');
+        }
       }
-    }
     } catch (error) {
       console.error('[WebSocket] 메시지 파싱 실패:', error);
     }

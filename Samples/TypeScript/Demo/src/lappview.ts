@@ -15,7 +15,7 @@ import { LAppSprite } from './lappsprite';
 import { TextureInfo } from './lapptexturemanager';
 import { TouchManager } from './touchmanager';
 import { LAppSubdelegate } from './lappsubdelegate';
-import { SubtitleBar } from './subtitle/subtitlebar'; //  SubtitleBar 클래스 import
+import { ChatManager } from './chat/chatmanager'; // SubtitleBar에서 ChatManager로 변경
 
 /**
  * 그림 수업.
@@ -38,8 +38,8 @@ export class LAppView {
     // 화면 표시 및 이동을 변환하는 행렬
     this._viewMatrix = new CubismViewMatrix();
 
-    // SubtitleBar 인스턴스 생성
-    this._subtitleBar = new SubtitleBar();
+    // ChatManager 인스턴스 생성
+    this._chatManager = new ChatManager();
   }
 
   /**
@@ -296,36 +296,43 @@ export class LAppView {
   }
 
   /**
-   * 자막바 메시지를 표시하는 새로운 메소드 추가
+   * 채팅 메시지를 표시하는 메소드 (말풍선 추가)
    * @param name 캐릭터 이름
    * @param message 메시지 내용
    */
   public showSubtitleMessage(name: string, message: string): void {
-      this._subtitleBar.showMessage(name, message);
+      this._chatManager.showMessage(name, message);
   }
 
   /**
-   * 자막바를 숨기는 메소드
+   * 채팅 UI를 숨기는 메소드
    */
   public hideSubtitleMessage(): void {
-      this._subtitleBar.hide();
+      this._chatManager.hide();
   }
 
   /**
-   * 자막바의 보이기/숨기기 상태를 토글합니다.
+   * 채팅 UI의 보이기/숨기기 상태를 토글합니다.
    */
   public toggleSubtitle(): void {
-      this._subtitleBar.toggle();
+      this._chatManager.toggle();
+  }
+
+  /**
+   * LAppDelegate 등에서 ChatManager에 직접 접근하기 위한 Getter
+   */
+  public getChatManager(): ChatManager {
+    return this._chatManager;
   }
   
   _touchManager: TouchManager; // タッチマネージャー
   _deviceToScreen: CubismMatrix44; // デバイスからスクリーンへの行列
   _viewMatrix: CubismViewMatrix; // viewMatrix
   _programId: WebGLProgram; // シェーダID
-  _back: LAppSprite; // 背景画像
-  _gear: LAppSprite; // ギア画像
-  _changeModel: boolean; // モデル切り替えフラグ
-  _isClick: boolean; // クリック中
+  _back: LAppSprite; // 배경 이미지
+  _gear: LAppSprite; // 기어 이미지
+  _changeModel: boolean; // 모델 전환 플래그
+  _isClick: boolean; // 클릭 중
   private _subdelegate: LAppSubdelegate;
-  private _subtitleBar: SubtitleBar; // _subtitleBar 멤버 변수 추가
+  private _chatManager: ChatManager; // 변수명 변경
 }

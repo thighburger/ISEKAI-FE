@@ -1,0 +1,106 @@
+/* style/chatpage.css - 통합 버전 */
+
+/* 1. 폰트 설정 (subtitle.css에서 가져옴) */
+@font-face {
+  font-family: 'Netmarble';
+  src: url('./fonts/netmarble_font/netmarbleL.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Netmarble';
+  src: url('./fonts/netmarble_font/netmarbleM.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Netmarble';
+  src: url('./fonts/netmarble_font/netmarbleB.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 2. 전체 페이지 설정 */
+#page-chat {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Netmarble', sans-serif;
+}
+
+/* 배경 블러 처리 */
+.chat-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url('../../Resources/anime-school-background.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px) brightness(0.7);
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+/* 3. 채팅 UI 레이아웃 (우측 50%) */
+.chat-ui-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* 메시지 리스트 */
+#message-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-bottom: 20px;
+}
+#message-list::-webkit-scrollbar { display: none; }
+
+/* 4. 말풍선 디자인 */
+.bubble {
+  max-width: 80%;
+  padding: 12px 20px;
+  border-radius: 20px;
+  font-size: 1.1rem; /* subtitle.css의 크기 반영 */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+}
+
+/* AI 답변 (왼쪽) */
+.bubble.ai {
+  align-self: flex-start;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+/* 사용자 답변 (오른쪽) */
+.bubble.user {
+  align-self: flex-end;
+  background-color: #7fc8ba;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+/* (옵션) 캐릭터 이름 표시 - 말풍선 상단에 작게 표시할 경우 */
+.char-name-tag {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #eee;
+  margin-bottom: 4px;
+  margin-left: 5px;
+}

@@ -395,7 +395,12 @@ export class LAppModel extends CubismUserModel {
       if (this._modelHomeDir.includes('HoshinoAi')) {
         // 숫자를 조절하여 원하는 크기를 맞추세요. (예: 2.0배)
         this._modelMatrix.scale(2.5, 2.5);
-        this._modelMatrix.translate(0.0, -0.85);
+        // 좌측으로 이동
+        this._modelMatrix.translate(-0.8, -0.85);
+      }
+      // ANIYA 등 다른 모델도 왼쪽 배치가 필요하다면 아래와 같이 추가 가능합니다.
+      if (this._modelHomeDir.includes('ANIYA')) {
+        this._modelMatrix.translate(-0.8, 0.0);
       }
       // --- 여기까지 추가 ---
 
