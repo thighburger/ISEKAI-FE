@@ -40,6 +40,7 @@
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
         "react-router-dom": "^7.11.0",
+        "styled-components": "^6.1.19",
         "ws": "^8.18.3"
     }
 }
