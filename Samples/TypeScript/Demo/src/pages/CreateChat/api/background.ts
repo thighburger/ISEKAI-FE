@@ -8,6 +8,7 @@ export interface GenerateBackgroundRequest {
 
 export interface GenerateBackgroundResponse {
   imageUrl: string;
+  backgroundFileName: string;
 }
 
 /**

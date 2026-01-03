@@ -8,6 +8,7 @@ export interface GenerateCharacterRequest {
 
 export interface GenerateCharacterResponse {
   zipUrl: string;
+  live2dFileName: string;
 }
 
 /**
