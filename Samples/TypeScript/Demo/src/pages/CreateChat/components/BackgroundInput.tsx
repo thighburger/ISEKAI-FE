@@ -24,7 +24,11 @@ export const BackgroundInput = () => {
       <FormTextarea placeholder="배경화면을 설명해주세요." {...register('background')} />
       <PreviewSection>
         <PreviewHeader>
-          <PreviewBtn onClick={handlePreview} disabled={isPending || !backgroundValue?.trim()}>
+          <PreviewBtn
+            type="button"
+            onClick={handlePreview}
+            disabled={isPending || !backgroundValue?.trim()}
+          >
             {isPending ? '생성 중...' : '미리보기'}
           </PreviewBtn>
         </PreviewHeader>

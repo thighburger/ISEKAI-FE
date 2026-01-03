@@ -25,7 +25,11 @@ export const AppearanceInput = () => {
       <FormTextarea placeholder="캐릭터 외모를 묘사해주세요." {...register('appearance')} />
       <PreviewSection>
         <PreviewHeader>
-          <PreviewBtn onClick={handlePreview} disabled={isPending || !appearanceValue?.trim()}>
+          <PreviewBtn
+            type="button"
+            onClick={handlePreview}
+            disabled={isPending || !appearanceValue?.trim()}
+          >
             {isPending ? '생성 중...' : '미리보기'}
           </PreviewBtn>
         </PreviewHeader>
