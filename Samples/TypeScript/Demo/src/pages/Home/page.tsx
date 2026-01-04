@@ -17,11 +17,25 @@ const Home: React.FC = () => {
       id: '1',
       title: '캐릭터 1',
       description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=1'
     },
     {
       id: '2',
       title: '캐릭터 2',
       description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=2'
+    },
+    {
+      id: '3',
+      title: '캐릭터 2',
+      description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=3'
+    },
+    {
+      id: '4',
+      title: '캐릭터 2',
+      description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=4'
     },
   ];
 
@@ -67,7 +81,7 @@ const Home: React.FC = () => {
 };
 
 const HomeContainer = styled.main`
-  padding: ${LAYOUT.spacing['4']} ${LAYOUT.spacing['6xl']};
+  padding: ${LAYOUT.spacing['md']} ${LAYOUT.spacing['6xl']};
   max-width: ${LAYOUT.container.maxWidth};
   background-color: ${COLORS.background.primary};
   margin: ${LAYOUT.navbar.height} auto 0;

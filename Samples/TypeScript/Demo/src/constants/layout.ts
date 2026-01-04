@@ -26,7 +26,7 @@ export const LAYOUT = {
   
   // 카드
   card: {
-    width: '280px',
+    width: '250px',
     height: '320px',
   },
   
