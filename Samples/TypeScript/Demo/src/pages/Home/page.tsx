@@ -7,12 +7,20 @@ import { CharacterModal } from '@/components/CharacterModal';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
 import { Character } from '@/types/character';
 
-const Home: React.FC = () => {
+interface HomeProps {
+  title?: string;
+  isMyCharacters?: boolean;
+}
+
+const Home: React.FC<HomeProps> = ({ 
+  title = '캐릭터 모아보기', 
+  isMyCharacters = false 
+}) => {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 임시 데이터 (추후 API로 대체)
-  const characters: Character[] = [
+  const allCharacters: Character[] = [
     {
       id: '1',
       title: '캐릭터 1',
@@ -27,17 +35,35 @@ const Home: React.FC = () => {
     },
     {
       id: '3',
-      title: '캐릭터 2',
+      title: '캐릭터 3',
       description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
       imageUrl: 'https://picsum.photos/240/180?random=3'
     },
     {
       id: '4',
-      title: '캐릭터 2',
+      title: '캐릭터 4',
       description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
       imageUrl: 'https://picsum.photos/240/180?random=4'
     },
   ];
+
+  // 내 캐릭터 페이지일 경우 일부만 표시
+  const myCharacters: Character[] = [
+    {
+      id: '1',
+      title: '캐릭터 1',
+      description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=1'
+    },
+    {
+      id: '2',
+      title: '캐릭터 2',
+      description: '캐릭터 설명입니다. 이것은 샘플 캐릭터의 상세 설명입니다.',
+      imageUrl: 'https://picsum.photos/240/180?random=2'
+    },
+  ];
+
+  const characters = isMyCharacters ? myCharacters : allCharacters;
 
   const handleCardClick = (character: Character) => {
     setSelectedCharacter(character);
@@ -57,7 +83,7 @@ const Home: React.FC = () => {
     <>
       <Navbar />
       <HomeContainer>
-        <SectionTitle>부제목입니다</SectionTitle>
+        <SectionTitle>{title}</SectionTitle>
         
         <CharacterGrid>
           {characters.map((character) => (

@@ -1,4 +1,3 @@
-// src/App.tsx (대안)
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { GlobalStyles } from '@/style/GlobalStyles';
@@ -11,7 +10,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/characters" element={<div>캐릭터 제작</div>} />
-        <Route path="/my-characters" element={<div>내 캐릭터</div>} />
+        <Route 
+          path="/my-characters" 
+          element={<Home title="내 캐릭터" isMyCharacters={true} />} 
+        />
       </Routes>
     </>
   );
