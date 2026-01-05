@@ -30,8 +30,8 @@ export const useLive2D = ({
 
     // 1. Initialize Framework (Global)
     if (LAppDelegate.getInstance().initialize() === false) {
-        console.error("Failed to initialize Live2D Framework");
-        return;
+      console.error('Failed to initialize Live2D Framework');
+      return;
     }
 
     // 2. Initialize Canvas
@@ -48,34 +48,34 @@ export const useLive2D = ({
     const isInitialized = subdelegate.initialize(canvas);
 
     if (!isInitialized) {
-        console.error("Failed to initialize Live2D Subdelegate");
-        return;
+      console.error('Failed to initialize Live2D Subdelegate');
+      return;
     }
-    
+
     subdelegateRef.current = subdelegate;
-    
+
     // 4. Get Manager and Load Model
     const live2dManager = subdelegate.getLive2DManager();
     live2dManager.setModelConfig(modelConfig);
-    
+
     if (resources) {
-        live2dManager.loadModelFromResources(resources, modelPath, modelFileName);
+      live2dManager.loadModelFromResources(resources, modelPath, modelFileName);
     } else {
-        live2dManager.loadModel(modelPath, modelFileName);
+      live2dManager.loadModel(modelPath, modelFileName);
     }
-    
+
     setManager(live2dManager);
 
     // 5. Start Loop
     LAppPal.updateTime(); // Prime the timer to set initial time
 
     const animate = () => {
-        LAppPal.updateTime(); // Calculate delta time for this frame
-        if (subdelegateRef.current) {
-            subdelegateRef.current.onResize(); // Ensure canvas size is correct
-            subdelegateRef.current.update();
-            requestRef.current = requestAnimationFrame(animate);
-        }
+      LAppPal.updateTime(); // Calculate delta time for this frame
+      if (subdelegateRef.current) {
+        subdelegateRef.current.onResize(); // Ensure canvas size is correct
+        subdelegateRef.current.update();
+        requestRef.current = requestAnimationFrame(animate);
+      }
     };
     requestRef.current = requestAnimationFrame(animate);
 
@@ -88,7 +88,7 @@ export const useLive2D = ({
         subdelegateRef.current = null;
       }
       if (containerRef.current && canvas.parentNode === containerRef.current) {
-         containerRef.current.removeChild(canvas);
+        containerRef.current.removeChild(canvas);
       }
     };
   }, [containerRef, modelPath, modelFileName, resources]); // Re-run if model changes
