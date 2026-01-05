@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useFormContext } from 'react-hook-form';
 import { CreateChatFormData } from '../types/form';
+import { COLORS, FONTS, LAYOUT } from '@/constants';
 
 interface NameInputProps {
   maxLength?: number;
@@ -24,7 +25,7 @@ export const NameInput = ({ maxLength = 20 }: NameInputProps) => {
           maxLength={maxLength}
         />
         <CharCount>
-          {nameValue.length} /{maxLength}
+          {nameValue.length} / {maxLength}
         </CharCount>
       </InputWrapper>
     </FormGroup>
@@ -33,7 +34,7 @@ export const NameInput = ({ maxLength = 20 }: NameInputProps) => {
 
 // Styled Components
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: ${LAYOUT.spacing.lg};
 
   &:last-child {
     margin-bottom: 0;
@@ -42,10 +43,10 @@ const FormGroup = styled.div`
 
 const FormLabel = styled.label`
   display: block;
-  font-size: 14px;
-  color: #fff;
-  margin-bottom: 8px;
-  font-weight: 500;
+  font-size: ${FONTS.size.sm};
+  color: ${COLORS.text.primary};
+  margin-bottom: ${LAYOUT.spacing.sm};
+  font-weight: ${FONTS.weight.medium};
 `;
 
 const InputWrapper = styled.div`
@@ -54,30 +55,31 @@ const InputWrapper = styled.div`
 
 const FormInput = styled.input`
   width: 100%;
-  padding: 12px 15px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
+  padding: ${LAYOUT.spacing.md} ${LAYOUT.spacing.md};
+  background-color: ${COLORS.background.secondary};
+  border: 1px solid ${COLORS.border.primary};
+  border-radius: ${LAYOUT.borderRadius.md};
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.sm};
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  font-family: ${FONTS.family.pretendard};
 
   &:focus {
-    border-color: #ff4d4d;
+    border-color: ${COLORS.accent.primary};
   }
 
   &::placeholder {
-    color: #666;
+    color: ${COLORS.text.tertiary};
   }
 `;
 
 const CharCount = styled.span`
   position: absolute;
-  right: 12px;
+  right: ${LAYOUT.spacing.sm};
   top: 50%;
   transform: translateY(-50%);
-  color: #666;
-  font-size: 12px;
+  color: ${COLORS.text.tertiary};
+  font-size: ${FONTS.size.xs};
 `;

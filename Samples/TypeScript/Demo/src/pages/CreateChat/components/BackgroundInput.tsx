@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { useFormContext } from 'react-hook-form';
 import { useGenerateBackground } from '../hooks';
 import { CreateChatFormData } from '../types/form';
+import { COLORS, FONTS, LAYOUT } from '@/constants';
 
 export const BackgroundInput = () => {
   const { register, watch, setValue } = useFormContext<CreateChatFormData>();
@@ -46,7 +47,7 @@ export const BackgroundInput = () => {
 
 // Styled Components
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: ${LAYOUT.spacing.lg};
 
   &:last-child {
     margin-bottom: 0;
@@ -55,71 +56,74 @@ const FormGroup = styled.div`
 
 const FormLabel = styled.label`
   display: block;
-  font-size: 14px;
-  color: #fff;
-  margin-bottom: 8px;
-  font-weight: 500;
+  font-size: ${FONTS.size.sm};
+  color: ${COLORS.text.primary};
+  margin-bottom: ${LAYOUT.spacing.sm};
+  font-weight: ${FONTS.weight.medium};
 `;
 
 const FormTextarea = styled.textarea`
   width: 100%;
-  padding: 12px 15px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
+  padding: ${LAYOUT.spacing.md} ${LAYOUT.spacing.md};
+  background-color: ${COLORS.background.secondary};
+  border: 1px solid ${COLORS.border.primary};
+  border-radius: ${LAYOUT.borderRadius.md};
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.sm};
   outline: none;
   resize: vertical;
   min-height: 80px;
-  font-family: inherit;
+  font-family: ${FONTS.family.pretendard};
   transition: border-color 0.2s;
   box-sizing: border-box;
 
   &:focus {
-    border-color: #ff4d4d;
+    border-color: ${COLORS.accent.primary};
   }
 
   &::placeholder {
-    color: #666;
+    color: ${COLORS.text.tertiary};
   }
 `;
 
 const PreviewSection = styled.div`
-  margin-top: 15px;
+  margin-top: ${LAYOUT.spacing.md};
 `;
 
 const PreviewHeader = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  margin-bottom: ${LAYOUT.spacing.sm};
 `;
 
 const PreviewBtn = styled.button`
-  padding: 8px 16px;
-  background-color: #ff4d4d;
+  padding: ${LAYOUT.spacing.xs} ${LAYOUT.spacing.md};
+  background-color: ${COLORS.accent.primary};
   border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
+  border-radius: ${LAYOUT.borderRadius.sm};
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.xs};
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #ff3333;
+    background-color: ${COLORS.accent.hover};
   }
 
   &:disabled {
-    background-color: #555;
+    background-color: ${COLORS.text.disabled};
     cursor: not-allowed;
+    opacity: ${COLORS.opacity.disabled};
   }
 `;
 
 const BackgroundPreviewContainer = styled.div`
   width: 100%;
   aspect-ratio: 16/9;
-  background-color: #1a1a1a;
-  border-radius: 8px;
+  max-width: ${LAYOUT.preview.backgroundMaxWidth};
+  margin: 0 auto;
+  background-color: ${COLORS.background.secondary};
+  border-radius: ${LAYOUT.borderRadius.md};
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -133,6 +137,6 @@ const PreviewImage = styled.img`
 `;
 
 const PreviewPlaceholder = styled.span`
-  color: #666;
-  font-size: 14px;
+  color: ${COLORS.text.tertiary};
+  font-size: ${FONTS.size.sm};
 `;

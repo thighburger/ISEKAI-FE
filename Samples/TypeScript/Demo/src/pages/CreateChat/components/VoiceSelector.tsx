@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { VoiceType, VOICE_OPTIONS } from '../types';
 import { CreateChatFormData } from '../types/form';
+import { COLORS, FONTS, LAYOUT } from '@/constants';
 
 export const VoiceSelector = () => {
   const { watch, setValue } = useFormContext<CreateChatFormData>();
@@ -50,7 +51,7 @@ export const VoiceSelector = () => {
 
 // Styled Components
 const FormGroup = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: ${LAYOUT.spacing.lg};
 
   &:last-child {
     margin-bottom: 0;
@@ -59,33 +60,35 @@ const FormGroup = styled.div`
 
 const FormLabel = styled.label`
   display: block;
-  font-size: 14px;
-  color: #fff;
-  margin-bottom: 8px;
-  font-weight: 500;
+  font-size: ${FONTS.size.sm};
+  color: ${COLORS.text.primary};
+  margin-bottom: ${LAYOUT.spacing.sm};
+  font-weight: ${FONTS.weight.medium};
 `;
 
 const VoiceSelection = styled.div`
   display: flex;
-  gap: 10px;
+  gap: ${LAYOUT.spacing.sm};
   flex-wrap: wrap;
 `;
 
 const VoiceBtn = styled.button<{ $active?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: ${props => (props.$active ? '#ff4d4d' : '#1a1a1a')};
-  border: 1px solid ${props => (props.$active ? '#ff4d4d' : '#444')};
-  border-radius: 20px;
-  color: #fff;
-  font-size: 13px;
+  gap: ${LAYOUT.spacing.xs};
+  padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.md};
+  background-color: ${props => (props.$active ? COLORS.accent.primary : COLORS.background.secondary)};
+  border: 1px solid ${props => (props.$active ? COLORS.accent.primary : COLORS.border.primary)};
+  border-radius: ${LAYOUT.borderRadius.full};
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.xs};
   cursor: pointer;
   transition: all 0.2s;
+  font-family: ${FONTS.family.pretendard};
 
   &:hover {
-    border-color: ${props => (props.$active ? '#ff4d4d' : '#666')};
+    border-color: ${props => (props.$active ? COLORS.accent.primary : COLORS.border.secondary)};
+    background-color: ${props => (props.$active ? COLORS.accent.hover : COLORS.background.secondary)};
   }
 `;
 
@@ -100,7 +103,7 @@ const VoiceIcon = styled.span`
 const PlayIcon = styled.span`
   width: 0;
   height: 0;
-  border-left: 8px solid #fff;
+  border-left: 8px solid ${COLORS.text.primary};
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
 `;
@@ -113,5 +116,5 @@ const PauseIcon = styled.span`
 const PauseBar = styled.span`
   width: 3px;
   height: 12px;
-  background-color: #fff;
+  background-color: ${COLORS.text.primary};
 `;

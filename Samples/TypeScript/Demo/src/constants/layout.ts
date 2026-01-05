@@ -9,6 +9,11 @@ export const LAYOUT = {
   container: {
     maxWidth: '1200px',
   },
+
+  preview: {
+    appearanceMaxWidth: '300px',
+    backgroundMaxWidth: '500px',
+  },
   
   // 간격 (spacing)
   spacing: {
