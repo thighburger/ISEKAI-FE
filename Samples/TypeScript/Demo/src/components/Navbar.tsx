@@ -10,7 +10,7 @@ export const Navbar: React.FC = () => {
   const getCurrentPage = () => {
     const path = location.pathname;
     if (path === '/' || path === '/home') return 'home';
-    if (path === '/characters') return 'characters';
+    if (path === '/create-chat') return 'create-chat';
     if (path === '/my-characters') return 'my-characters';
     return '';
   };
@@ -31,7 +31,7 @@ export const Navbar: React.FC = () => {
           <NavLink to="/" $active={currentPage === 'home'}>
             홈
           </NavLink>
-          <NavLink to="/characters" $active={currentPage === 'characters'}>
+          <NavLink to="/create-chat" $active={currentPage === 'create-chat'}>
             캐릭터 제작
           </NavLink>
           <NavLink to="/my-characters" $active={currentPage === 'my-characters'}>
