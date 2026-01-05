@@ -37,7 +37,6 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
 
 const CardContainer = styled.div`
   background-color: ${COLORS.card.bg};
-  border-radius: ${LAYOUT.borderRadius.md};
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -53,9 +52,10 @@ const CardContainer = styled.div`
 
 const CardImage = styled.div<{ $hasImage: boolean }>`
   width: 100%;
-  height: 180px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   background-color: ${COLORS.card.bg};
+  border-radius: ${LAYOUT.borderRadius.md};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,6 +63,7 @@ const CardImage = styled.div<{ $hasImage: boolean }>`
   color: ${COLORS.card.text};
   font-weight: 600;
   position: ${props => props.$hasImage ? 'relative' : 'static'};
+  overflow: hidden;
 
   img {
     width: 100%;
@@ -97,14 +98,15 @@ const CardContent = styled.div`
 
 const CardTitle = styled.h3`
   font-size: ${FONTS.size.cardTitle};
-  font-weight: 700;
+  font-weight: ${FONTS.weight.extrabold};
   color: ${COLORS.card.text};
   margin-bottom: ${LAYOUT.spacing.xs};
 `;
 
 const CardDescription = styled.p`
   font-size: ${FONTS.size.cardDesc};
-  color: ${COLORS.card.text};
+  font-weight: ${FONTS.weight.regular};
+  color: ${COLORS.card.describe};
   line-height: 1.5;
   opacity: 0.8;
 `;

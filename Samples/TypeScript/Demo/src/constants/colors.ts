@@ -38,9 +38,10 @@ export const COLORS = {
   
   // 카드 색상
   card: {
-    bg: '#d9d9d9',
+    bg: 'transportation',
     bgHover: '#e5e5e5',
-    text: '#000000',
+    text: '#ffffffff',
+    describe: '#dfdfdf',
     border: 'rgba(255, 255, 255, 0.1)',
   },
   
