@@ -633,6 +633,19 @@ export class LAppModel extends CubismUserModel {
       this._pose.updateParameters(this._model, deltaTimeSeconds);
     }
 
+    // --------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
+    // 외부 강제 파라미터 적용 (매 프레임 고정)
+    if (this._parameterOverrides.size > 0) {
+      this._parameterOverrides.forEach((value, id) => {
+        // 문자열 ID를 CubismId로 변환
+        const cubismId = CubismFramework.getIdManager().getId(id);
+        this._model.setParameterValueById(cubismId, value, 1.0);
+      });
+    }
+    // --------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
+
     this._model.update();
   }
 
@@ -645,6 +658,15 @@ export class LAppModel extends CubismUserModel {
   
   private _userLipSyncValue: number = -1; // -1이면 내부 로직 사용
   private _resources: Map<string, ArrayBuffer> | null = null;
+  // 파라미터 강제 고정용 맵
+  private _parameterOverrides: Map<string, number> = new Map<string, number>();
+
+  /**
+   * 파라미터 값을 강제로 고정 설정합니다. (매 프레임 적용됨)
+   */
+  public setParameterOverride(id: string, value: number): void {
+      this._parameterOverrides.set(id, value);
+  }
 
   /**
    * 인수에 의해 지정된 모션 재생 시작
