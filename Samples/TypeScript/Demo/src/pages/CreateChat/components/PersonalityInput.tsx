@@ -9,7 +9,7 @@ export const PersonalityInput = () => {
   return (
     <FormGroup>
       <FormLabel>성격</FormLabel>
-      <FormTextarea placeholder="캐릭터 성격을 설명해주세요." {...register('personality')} />
+      <FormTextarea placeholder="캐릭터 성격을 설명해주세요." {...register('persona')} />
     </FormGroup>
   );
 };

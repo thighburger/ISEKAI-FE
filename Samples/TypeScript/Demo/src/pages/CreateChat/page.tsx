@@ -11,17 +11,16 @@ import {
   BackgroundInput
 } from './components';
 import { useSaveCharacter } from './hooks';
+import { useRef } from 'react';
 
 const CreateChatPage = () => {
+  const uuidRef = useRef(crypto.randomUUID());
+
   const methods = useForm<CreateChatFormData>({
     defaultValues: {
       name: '',
-      appearance: '',
-      personality: '',
-      voice: 'cute',
-      background: '',
-      live2dFileName: '',
-      backgroundFileName: ''
+      persona: '',
+      voice: '',
     }
   });
 
@@ -33,11 +32,10 @@ const CreateChatPage = () => {
   const onSubmit = async (data: CreateChatFormData) => {
     try {
       const result = await saveCharacterMutation.mutateAsync({
+        uuid: uuidRef.current,
         name: data.name,
-        live2dFileName: data.live2dFileName,
-        personality: data.personality,
-        voice: data.voice,
-        backgroundFileName: data.backgroundFileName
+        persona:data.persona,
+        voice:data.voice,
       });
       console.log('캐릭터 저장 성공:', result);
       alert('캐릭터가 성공적으로 저장되었습니다!');
@@ -49,7 +47,7 @@ const CreateChatPage = () => {
 
   const formValues = watch();
   const isFormValid =
-    formValues.name?.trim() && formValues.appearance?.trim() && formValues.personality?.trim();
+    formValues.name?.trim() && formValues.persona?.trim();
 
   return (
     <>
@@ -62,7 +60,7 @@ const CreateChatPage = () => {
                 <Card>
                   <NameInput />
 
-                  <AppearanceInput />
+                  <AppearanceInput uuid={uuidRef.current}/>
 
                   <PersonalityInput />
 
@@ -73,7 +71,7 @@ const CreateChatPage = () => {
               <Section>
                 <SectionTitle>배경 설정</SectionTitle>
                 <Card>
-                  <BackgroundInput />
+                  <BackgroundInput uuid={uuidRef.current} />
                 </Card>
               </Section>
 

@@ -1,20 +1,18 @@
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { useFormContext } from 'react-hook-form';
 import { useGenerateBackground } from '../hooks';
-import { CreateChatFormData } from '../types/form';
 import { COLORS, FONTS, LAYOUT } from '@/constants';
 
-export const BackgroundInput = () => {
-  const { register, watch, setValue } = useFormContext<CreateChatFormData>();
+export const BackgroundInput = ({ uuid }: { uuid: string }) => {
   const { mutate, data, isPending } = useGenerateBackground();
-
-  const backgroundValue = watch('background');
+  const [prompt, setPrompt] = useState<string>('');
 
   const handlePreview = () => {
-    if (!backgroundValue?.trim()) return;
-    mutate(backgroundValue, {
+    if (!prompt?.trim()) return;
+    mutate({ uuid, prompt }, {
       onSuccess: response => {
-        setValue('backgroundFileName', response.backgroundFileName);
+        // Preview handling if needed
+        console.log(response);
       }
     });
   };
@@ -22,20 +20,24 @@ export const BackgroundInput = () => {
   return (
     <FormGroup>
       <FormLabel>배경</FormLabel>
-      <FormTextarea placeholder="배경화면을 설명해주세요." {...register('background')} />
+      <FormTextarea 
+        placeholder="배경화면을 설명해주세요." 
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)} 
+      />
       <PreviewSection>
         <PreviewHeader>
           <PreviewBtn
             type="button"
             onClick={handlePreview}
-            disabled={isPending || !backgroundValue?.trim()}
+            disabled={isPending || !prompt?.trim()}
           >
             {isPending ? '생성 중...' : '미리보기'}
           </PreviewBtn>
         </PreviewHeader>
         <BackgroundPreviewContainer>
-          {data?.imageUrl ? (
-            <PreviewImage src={data.imageUrl} alt="배경 미리보기" />
+          {data?.previewUrl ? (
+            <PreviewImage src={data.previewUrl} alt="배경 미리보기" />
           ) : (
             <PreviewPlaceholder>배경 미리보기</PreviewPlaceholder>
           )}

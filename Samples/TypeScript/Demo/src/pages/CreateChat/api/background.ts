@@ -1,25 +1,25 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+import { axiosClient } from '@/api/client';
 
 export interface GenerateBackgroundRequest {
-  description: string;
+  uuid: string;
+  prompt: string;
 }
 
 export interface GenerateBackgroundResponse {
-  imageUrl: string;
-  backgroundFileName: string;
+  previewUrl: string;
+  uuid: string;
+  expirationTime: string;
 }
 
 /**
  * 배경 설명 텍스트를 전달하고 배경 이미지 URL을 받아옴
  */
 export const generateBackground = async (
-  description: string
+  request: GenerateBackgroundRequest
 ): Promise<GenerateBackgroundResponse> => {
-  const response = await axios.post<GenerateBackgroundResponse>(
-    `${API_BASE_URL}/background/generate`,
-    { description }
+  const response = await axiosClient.post<GenerateBackgroundResponse>(
+    '/characters/background-image',
+    request
   );
   return response.data;
 };

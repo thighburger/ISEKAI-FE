@@ -1,9 +1,6 @@
 export interface CreateChatFormData {
+  uuid: string;
   name: string;
-  appearance: string;
-  personality: string;
+  persona: string;
   voice: string;
-  background: string;
-  live2dFileName: string;
-  backgroundFileName: string;
 }

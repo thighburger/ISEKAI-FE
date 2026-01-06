@@ -1,19 +1,10 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+import { axiosClient } from '@/api/client';
 
 export interface SaveCharacterRequest {
+  uuid: string;
   name: string;
-  live2dFileName: string;
-  personality: string;
+  persona: string;
   voice: string;
-  backgroundFileName: string;
-}
-
-export interface SaveCharacterResponse {
-  success: boolean;
-  characterId: string;
-  message?: string;
 }
 
 /**
@@ -21,10 +12,10 @@ export interface SaveCharacterResponse {
  */
 export const saveCharacter = async (
   characterData: SaveCharacterRequest
-): Promise<SaveCharacterResponse> => {
-  const response = await axios.post<SaveCharacterResponse>(
-    `${API_BASE_URL}/character/save`,
+) => {
+  const response = await axiosClient.post(
+    '/characters/confirm',
     characterData
   );
   return response.data;
-};
+};  

@@ -5,4 +5,4 @@ export { generateBackground } from './background';
 export type { GenerateBackgroundRequest, GenerateBackgroundResponse } from './background';
 
 export { saveCharacter } from './save';
-export type { SaveCharacterRequest, SaveCharacterResponse } from './save';
+export type { SaveCharacterRequest } from './save';
