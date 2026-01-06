@@ -8,6 +8,8 @@
 import { CubismMatrix44 } from '@framework/math/cubismmatrix44';
 import { ACubismMotion } from '@framework/motion/acubismmotion';
 import { csmVector } from '@framework/type/csmvector';
+import { Live2DCubismFramework } from '@framework/live2dcubismframework';
+import CubismFramework = Live2DCubismFramework.CubismFramework;
 
 import * as LAppDefine from './lappdefine';
 import { LAppModel } from './lappmodel';
@@ -62,6 +64,28 @@ export class LAppLive2DManager {
       if (LAppDefine.DebugLogEnable) {
         LAppPal.printMessage(`[APP] Emotion: "${emotion}" not found. Setting random expression.`);
       }
+    }
+  }
+
+  /**
+   * 지정된 파라미터 ID의 값을 설정합니다. (고정값 저장)
+   * @param paramId 파라미터 ID 문자열 (예: "ParamAngleX")
+   * @param value 설정할 값
+   * @param weight 가중치 (기본값 1.0) - 현재 구현에서는 무시됨 (항상 Override)
+   */
+  public setParameterValue(paramId: string, value: number, weight: number = 1.0): void {
+    const model: LAppModel = this._models.at(0);
+    if (!model) {
+      return;
+    }
+
+    // 모델에 오버라이드 값 설정 (영구 저장)
+    model.setParameterOverride(paramId, value);
+    
+    // 즉시 적용도 시도 (모델 로드 완료 상태라면)
+    if (model.getModel()) {
+         const id = CubismFramework.getIdManager().getId(paramId);
+         model.getModel().setParameterValueById(id, value, weight);
     }
   }
 
