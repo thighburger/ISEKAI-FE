@@ -6,24 +6,23 @@ import { useState } from 'react';
 
 export const AppearanceInput = ({ uuid }: { uuid: string }) => {
   const { mutate, data, isPending } = useGenerateCharacter();
-  const [prompt,setPrompt] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>('');
 
   const handlePreview = () => {
     if (!prompt?.trim()) return;
-    mutate({uuid,prompt});
+    mutate({ uuid, prompt });
   };
 
   return (
     <FormGroup>
       <FormLabel>외모</FormLabel>
-      <FormTextarea placeholder="캐릭터 외모를 묘사해주세요." onChange={(e) => setPrompt(e.target.value)} />
+      <FormTextarea
+        placeholder="캐릭터 외모를 묘사해주세요."
+        onChange={e => setPrompt(e.target.value)}
+      />
       <PreviewSection>
         <PreviewHeader>
-          <PreviewBtn
-            type="button"
-            onClick={handlePreview}
-            disabled={isPending || !prompt?.trim()}
-          >
+          <PreviewBtn type="button" onClick={handlePreview} disabled={isPending || !prompt?.trim()}>
             {isPending ? '생성 중...' : '미리보기'}
           </PreviewBtn>
         </PreviewHeader>
