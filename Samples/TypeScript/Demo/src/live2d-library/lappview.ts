@@ -9,17 +9,14 @@ import { CubismMatrix44 } from '@framework/math/cubismmatrix44';
 import { CubismViewMatrix } from '@framework/math/cubismviewmatrix';
 
 import * as LAppDefine from './lappdefine';
-import { LAppDelegate } from './lappdelegate';
 import { LAppPal } from './lapppal';
 import { TouchManager } from './touchmanager';
 import { LAppSubdelegate } from './lappsubdelegate';
-import { ChatManager } from './chat/chatmanager'; // 추가
 
 /**
  * 그림 수업.
  */
 export class LAppView {
-  private _chatManager: ChatManager; // 추가
   /**
    * 생성자
    */
@@ -34,8 +31,6 @@ export class LAppView {
 
     // 화면 표시 및 이동을 변환하는 행렬
     this._viewMatrix = new CubismViewMatrix();
-
-    this._chatManager = new ChatManager(); // 인스턴스 생성
   }
 
   /**
@@ -77,11 +72,6 @@ export class LAppView {
     );
   }
 
-  // WebSocketManager에서 메시지를 표시하기 위해 필요
-  public getChatManager(): ChatManager {
-    return this._chatManager;
-  }
-  
   /**
    * 풀어 주다
    */
@@ -119,7 +109,7 @@ export class LAppView {
    * 이미지를 초기화하십시오.
    */
   public initializeSprite(): void {
-     // 셰이더를 만듭니다
+    // 셰이더를 만듭니다
     if (this._programId == null) {
       this._programId = this._subdelegate.createShader();
     }
@@ -224,8 +214,6 @@ export class LAppView {
   public transformScreenY(deviceY: number): number {
     return this._deviceToScreen.transformY(deviceY);
   }
-
-
 
   _touchManager: TouchManager; // タッチマネージャー
   _deviceToScreen: CubismMatrix44; // デバイスからスクリーンへの行列

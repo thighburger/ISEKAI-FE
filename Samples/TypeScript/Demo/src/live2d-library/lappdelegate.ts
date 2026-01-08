@@ -10,7 +10,6 @@ import * as LAppDefine from './lappdefine';
 import { LAppPal } from './lapppal';
 import { LAppSubdelegate } from './lappsubdelegate';
 import { CubismLogError } from '@framework/utils/cubismdebug';
-import { WebSocketManager } from './websocket/websocketmanager';
 
 export let s_instance: LAppDelegate = null;
 
@@ -137,8 +136,6 @@ export class LAppDelegate {
     this.releaseEventListener();
     this.releaseSubdelegates();
 
-
-
     // 입체파 SDK를 릴리스합니다
     CubismFramework.dispose();
 
@@ -205,31 +202,31 @@ export class LAppDelegate {
    * @returns The index/ID of the registered view.
    */
   public registerView(container: HTMLElement): number {
-      const index = this._subdelegates.getSize();
-      
-      // 1. 캔버스를 만들어서 container에 추가
-      const canvas = document.createElement('canvas');
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-      canvas.style.position = 'absolute';
-      canvas.style.top = '0';
-      canvas.style.left = '0';
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      this._canvases.pushBack(canvas);
-      container.appendChild(canvas);
+    const index = this._subdelegates.getSize();
 
-      // 2. subdelegate를 만들고 초기화
-      const subdelegate = new LAppSubdelegate();
-      subdelegate.initialize(canvas);
-      this._subdelegates.pushBack(subdelegate);
+    // 1. 캔버스를 만들어서 container에 추가
+    const canvas = document.createElement('canvas');
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    this._canvases.pushBack(canvas);
+    container.appendChild(canvas);
 
-      // 3. WebGL 컨텍스트 유실 여부 확인
-      if (subdelegate.isContextLost()) {
-        CubismLogError(`The context for Canvas at index ${index} was lost.`);
-      }
+    // 2. subdelegate를 만들고 초기화
+    const subdelegate = new LAppSubdelegate();
+    subdelegate.initialize(canvas);
+    this._subdelegates.pushBack(subdelegate);
 
-      return index;
+    // 3. WebGL 컨텍스트 유실 여부 확인
+    if (subdelegate.isContextLost()) {
+      CubismLogError(`The context for Canvas at index ${index} was lost.`);
+    }
+
+    return index;
   }
 
   /**
@@ -239,29 +236,29 @@ export class LAppDelegate {
    * But proper way involves tracking IDs. Let's keep it simple for now: release the resources.
    */
   public removeView(index: number): void {
-      if (index >= 0 && index < this._subdelegates.getSize()) {
-          const subdelegate = this._subdelegates.at(index);
-          const canvas = this._canvases.at(index);
-          
-          if (subdelegate) {
-              subdelegate.release();
-          }
-          if (canvas && canvas.parentElement) {
-              canvas.parentElement.removeChild(canvas);
-          }
-          
-          // Removing from vector shifts indices, which breaks other view references if they rely on index.
-          // Ideally, we should use a Map<ID, View> or handle nulls.
-          // For this demo, let's just mark as released or handle vectors carefully.
-          // Limitations: Vector doesn't support easy removal by index without shift.
-          // We will leave it in vector but maybe clear it? 
-          // Re-implementing with proper ID management is out of scope for quick fix, 
-          // so we'll just accept that indices are unstable if removed, 
-          // BUT given React lifecycle, we usually mount/unmount.
-          
-          // WARNING: Current simple implementation does NOT remove from vector to preserve indices of others.
-          // It just cleans up the DOM and WebGL.
+    if (index >= 0 && index < this._subdelegates.getSize()) {
+      const subdelegate = this._subdelegates.at(index);
+      const canvas = this._canvases.at(index);
+
+      if (subdelegate) {
+        subdelegate.release();
       }
+      if (canvas && canvas.parentElement) {
+        canvas.parentElement.removeChild(canvas);
+      }
+
+      // Removing from vector shifts indices, which breaks other view references if they rely on index.
+      // Ideally, we should use a Map<ID, View> or handle nulls.
+      // For this demo, let's just mark as released or handle vectors carefully.
+      // Limitations: Vector doesn't support easy removal by index without shift.
+      // We will leave it in vector but maybe clear it?
+      // Re-implementing with proper ID management is out of scope for quick fix,
+      // so we'll just accept that indices are unstable if removed,
+      // BUT given React lifecycle, we usually mount/unmount.
+
+      // WARNING: Current simple implementation does NOT remove from vector to preserve indices of others.
+      // It just cleans up the DOM and WebGL.
+    }
   }
 
   // Flag to check if global init is done
@@ -423,10 +420,10 @@ export class LAppDelegate {
 
     const models = live2DManager._models;
     if (models.getSize() > 0) {
-        const model = models.at(0);
-        if (model) {
-            model.setLipSyncValue(value);
-        }
+      const model = models.at(0);
+      if (model) {
+        model.setLipSyncValue(value);
+      }
     }
   }
 }

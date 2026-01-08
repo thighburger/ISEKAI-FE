@@ -1,25 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { LAppLive2DManager, Live2DModelConfig } from '../live2d-library/lapplive2dmanager';
+import { LAppLive2DManager } from '../live2d-library/lapplive2dmanager';
 import { LAppSubdelegate } from '../live2d-library/lappsubdelegate';
 import { LAppDelegate } from '../live2d-library/lappdelegate';
 import { LAppPal } from '../live2d-library/lapppal';
-import { Live2DCubismFramework as live2dcubismframework } from '@framework/live2dcubismframework';
-import CubismFramework = live2dcubismframework.CubismFramework;
 
 interface UseLive2DProps {
   containerRef: React.RefObject<HTMLElement>;
-  modelConfig: Live2DModelConfig;
   modelPath: string; // e.g. "Resources/HoshinoAi/" or root dir in zip
   modelFileName: string; // e.g. "HoshinoAi.model3.json"
   resources?: Map<string, ArrayBuffer>;
+  getLipSyncValue?: () => number;
 }
 
 export const useLive2D = ({
   containerRef,
-  modelConfig,
   modelPath,
   modelFileName,
-  resources
+  resources,
+  getLipSyncValue
 }: UseLive2DProps) => {
   const [manager, setManager] = useState<LAppLive2DManager | null>(null);
   const subdelegateRef = useRef<LAppSubdelegate | null>(null);
@@ -56,7 +54,6 @@ export const useLive2D = ({
 
     // 4. Get Manager and Load Model
     const live2dManager = subdelegate.getLive2DManager();
-    live2dManager.setModelConfig(modelConfig);
 
     if (resources) {
       live2dManager.loadModelFromResources(resources, modelPath, modelFileName);
@@ -72,6 +69,10 @@ export const useLive2D = ({
     const animate = () => {
       LAppPal.updateTime(); // Calculate delta time for this frame
       if (subdelegateRef.current) {
+        // 립싱크 값 업데이트 (React 렌더링과 분리)
+        if (getLipSyncValue && live2dManager) {
+          live2dManager.setLipSyncValue(getLipSyncValue());
+        }
         subdelegateRef.current.onResize(); // Ensure canvas size is correct
         subdelegateRef.current.update();
         requestRef.current = requestAnimationFrame(animate);

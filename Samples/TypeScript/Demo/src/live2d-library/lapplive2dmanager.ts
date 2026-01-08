@@ -27,7 +27,6 @@ export interface Live2DModelConfig {
 
 // ... existing code ...
 
-
 /**
  * 샘플 애플리케이션에서 CubismModel을 관리하는 클래스
  * 모델을 생성 및 폐기하고, 탭 이벤트를 처리하며, 모델을 스위치하십시오.
@@ -46,8 +45,8 @@ export class LAppLive2DManager {
     }
 
     if (!this._modelConfig) {
-        LAppPal.printMessage(`[APP] No model config set. Cannot map emotion: "${emotion}"`);
-        return;
+      LAppPal.printMessage(`[APP] No model config set. Cannot map emotion: "${emotion}"`);
+      return;
     }
 
     // 1. emotionMap에서 감정 키워드에 해당하는 표정 파일 이름을 찾습니다.
@@ -81,11 +80,11 @@ export class LAppLive2DManager {
 
     // 모델에 오버라이드 값 설정 (영구 저장)
     model.setParameterOverride(paramId, value);
-    
+
     // 즉시 적용도 시도 (모델 로드 완료 상태라면)
     if (model.getModel()) {
-         const id = CubismFramework.getIdManager().getId(paramId);
-         model.getModel().setParameterValueById(id, value, weight);
+      const id = CubismFramework.getIdManager().getId(paramId);
+      model.getModel().setParameterValueById(id, value, weight);
     }
   }
 
@@ -93,9 +92,19 @@ export class LAppLive2DManager {
    * Set external model configuration
    */
   public setModelConfig(config: Live2DModelConfig): void {
-      this._modelConfig = config;
+    this._modelConfig = config;
   }
-  
+
+  /**
+   * 립싱크 값 설정
+   */
+  public setLipSyncValue(value: number): void {
+    const model: LAppModel = this._models.at(0);
+    if (model) {
+      model.setLipSyncValue(value);
+    }
+  }
+
   private _modelConfig: Live2DModelConfig | null = null;
 
   private releaseAllModel(): void {
@@ -222,7 +231,7 @@ export class LAppLive2DManager {
 
     // 레이아웃 설정 적용
     if (this._modelConfig && this._modelConfig.layout) {
-        instance.setLayoutConfig(this._modelConfig.layout);
+      instance.setLayoutConfig(this._modelConfig.layout);
     }
 
     instance.loadAssets(modelPath, modelJsonName);
@@ -240,17 +249,17 @@ export class LAppLive2DManager {
    * Load specific model by path
    */
   public loadModel(modelPath: string, modelJsonName: string): void {
-      this.releaseAllModel();
-      const instance = new LAppModel();
-      instance.setSubdelegate(this._subdelegate);
+    this.releaseAllModel();
+    const instance = new LAppModel();
+    instance.setSubdelegate(this._subdelegate);
 
-      // 레이아웃 설정 적용
-      if (this._modelConfig && this._modelConfig.layout) {
-          instance.setLayoutConfig(this._modelConfig.layout);
-      }
-      
-      instance.loadAssets(modelPath, modelJsonName);
-      this._models.pushBack(instance);
+    // 레이아웃 설정 적용
+    if (this._modelConfig && this._modelConfig.layout) {
+      instance.setLayoutConfig(this._modelConfig.layout);
+    }
+
+    instance.loadAssets(modelPath, modelJsonName);
+    this._models.pushBack(instance);
   }
 
   public setViewMatrix(m: CubismMatrix44) {
@@ -273,23 +282,27 @@ export class LAppLive2DManager {
    * @param modelPath relative path to model directory (e.g. "Char/")
    * @param modelJsonName Name of the model3.json file (e.g. "model.model3.json")
    */
-  public loadModelFromResources(resources: Map<string, ArrayBuffer>, modelPath: string, modelJsonName: string): void {
-      this.releaseAllModel();
-      const instance = new LAppModel();
-      instance.setSubdelegate(this._subdelegate);
-      
-      // 레이아웃 설정 적용
-      if (this._modelConfig && this._modelConfig.layout) {
-          instance.setLayoutConfig(this._modelConfig.layout);
-      }
+  public loadModelFromResources(
+    resources: Map<string, ArrayBuffer>,
+    modelPath: string,
+    modelJsonName: string
+  ): void {
+    this.releaseAllModel();
+    const instance = new LAppModel();
+    instance.setSubdelegate(this._subdelegate);
 
-      // Inject resources
-      instance.preLoadResources(resources);
-      
-      // Load assets. 
-      instance.loadAssets(modelPath, modelJsonName);
-      
-      this._models.pushBack(instance);
+    // 레이아웃 설정 적용
+    if (this._modelConfig && this._modelConfig.layout) {
+      instance.setLayoutConfig(this._modelConfig.layout);
+    }
+
+    // Inject resources
+    instance.preLoadResources(resources);
+
+    // Load assets.
+    instance.loadAssets(modelPath, modelJsonName);
+
+    this._models.pushBack(instance);
   }
 
   /**
@@ -352,13 +365,12 @@ export class LAppLive2DManager {
     // Note: Live2DModelConfig definition needs optional keyMap for this to work implicitly,
     // or we assume it's part of the config. Let's start with just generic handling or skip if not in interface.
     // The previous interface had keyMap. We should add it to Live2DModelConfig if we want to keep this feature.
-    
+
     // For now, let's assume basic emotion mapping from digits 1-9 if they exist in emotionMap values?
-    // Or better, let's rely on the config interface having keyMap if we add it. 
-    // But to match the plan, let's just minimalize it or comment it out if not critical, 
+    // Or better, let's rely on the config interface having keyMap if we add it.
+    // But to match the plan, let's just minimalize it or comment it out if not critical,
     // OR expand Live2DModelConfig interface to include keyMap.
-    
+
     // Let's assume we want to keep the feature.
   }
 }
-
