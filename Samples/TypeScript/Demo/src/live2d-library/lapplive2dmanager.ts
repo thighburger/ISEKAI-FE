@@ -18,10 +18,17 @@ import { LAppSubdelegate } from './lappsubdelegate';
 
 import { ModelLayout } from './lappmodel';
 
+export interface MotionMapItem {
+  group: string;
+  index: number;
+  priority?: number;
+}
+
 export interface Live2DModelConfig {
-  emotionMap: { [key: string]: string };
+  emotionMap?: { [key: string]: string };
   keyMap?: { [key: string]: string };
   voiceMap?: { [key: string]: string };
+  motionMap?: { [key: string]: MotionMapItem };  // 모션 매핑
   layout?: ModelLayout;
 }
 
@@ -38,6 +45,110 @@ export class LAppLive2DManager {
    * AI 연동을 위한 핵심 기능입니다.
    * @param emotion - emotionMap에 정의된 감정 키워드 (예: "슬픔")
    */
+  /**
+   * 감정에 따라 표정이나 모션을 적용합니다.
+   * @param emotion 감정 키워드 (예: "happy", "sad", "neutral", "embarrassed")
+   */
+  public applyEmotion(emotion: string): void {
+      const model: LAppModel = this._models.at(0);
+      if (!model) return;
+
+      // 1. 기존 강제 파라미터 초기화 (새 감정 적용 전 상태 리셋)
+      model.clearParameterOverrides();
+
+      console.log(`[Manager] applyEmotion: ${emotion}`);
+
+      switch (emotion) {
+          case 'neutral':
+          case '슬픔':
+              console.log("슬픔");
+              this.setParameterValue("ParamEyeLOpen", 0.4); // 눈 작게
+              this.setParameterValue("ParamEyeROpen", 0.4);
+              this.setParameterValue("MouthFrownLeft", 1); // 입모양 삐짐
+              this.setParameterValue("MouthFrownRight", 1); // 입모양 삐짐
+              this.setParameterValue("MouthShrugLower", 1.0); 
+              this.setParameterValue("MouthCheekPuff", 0.5); 
+              this.setParameterValue("ParamAngleY",-15);
+              this.setParameterValue("ParamBrowLAngle",-30); 
+              this.setParameterValue("ParamBrowRAngle",-30); 
+              this.setParameterValue("ParamBrowLY",-1);
+              this.setParameterValue("ParamBrowRY",-1); 
+              break;
+          case '부끄러움':
+              this.setParameterValue("ParamAngleX", -20); 
+              this.setParameterValue("ParamAngleY", -30);
+              this.setParameterValue("ParamEyeBallY", 1);
+              this.setParameterValue("ParamBrowLForm", -1);
+              this.setParameterValue("ParamBrowRForm", -1);
+              this.setParameterValue("ParamBodyAngleX", 30);
+              this.setParameterValue("ParamBodyAngleZ", -15);
+              this.setParameterValue("Param16", 30);
+              this.setParameterValue("Param32", -30);
+
+               
+              break;
+          case '행복':
+              this.setParameterValue("ParamEyeLOpen", 1.0); // 눈 크게
+              this.setParameterValue("ParamEyeROpen", 1.0);
+              this.setParameterValue("MouthSmileLeft", 1); // 입 웃음
+              this.setParameterValue("MouthSmileRight", 1); // 입 웃음
+              this.setParameterValue("ParamEyeLSmile", 1); // 눈 웃음
+              this.setParameterValue("ParamEyeRSmile", 1); // 눈 웃음
+              break;
+
+          case '중립':
+              break;    
+
+          case '화남':
+              this.setParameterValue("ParamEyeLOpen", 1.0); // 눈 크게
+              this.setParameterValue("ParamEyeROpen", 1.0);
+              this.setParameterValue("ParamBrowLAngle", 1);
+              this.setParameterValue("ParamBrowRAngle", 1);
+              this.setParameterValue("Param40",1);
+              this.setParameterValue("Param43",1);
+              this.setParameterValue("ParamBrowLAngle",30); 
+              this.setParameterValue("ParamBrowRAngle",30); 
+              this.setParameterValue("ParamBrowLY",-1);
+              this.setParameterValue("ParamBrowRY",-1);
+              this.setParameterValue("MouthShrugUpper",1);
+              break;
+
+          case '놀람':
+              this.setParameterValue("ParamEyeLOpen", 1.0); // 눈 크게
+              this.setParameterValue("ParamEyeROpen", 1.0);
+              this.setParameterValue("ParamMouthForm", -0.5); 
+              this.setParameterValue("ParamBrowLForm",1);
+              this.setParameterValue("ParamBrowRForm",1);
+              this.setParameterValue("ParamJawOpen",1);
+              this.setParameterValue("ParamMouthPucker",1);
+              break;
+
+          case '경멸':
+              this.setParameterValue("ParamAngleY", 20); 
+              this.setParameterValue("ParamAngleZ", -30);
+              this.setParameterValue("EyeR_Squint", 1); 
+              this.setParameterValue("EyeL_Squint",1);
+              this.setParameterValue("MouthShrugUpper",1);
+              this.setParameterValue("ParamBrowLY",-1);
+              this.setParameterValue("ParamBrowRY",-1);
+              this.setParameterValue("ParamEyeLSmile",0.5); 
+              this.setParameterValue("ParamEyeRSmile",0.5); 
+              this.setParameterValue("ParamBrowLAngle",-1); 
+              this.setParameterValue("ParamBrowRAngle",-1); 
+              this.setParameterValue("ParamBrowLForm",1); 
+              this.setParameterValue("ParamBrowRForm",-0.5); 
+              this.setParameterValue("ParamEyeLOpen",0.75); 
+              this.setParameterValue("ParamEyeROpen",0.6); 
+              this.setParameterValue("ParamEyeBallY",-1); 
+              break;
+          
+
+          default:
+              //매칭되는 로직이 없으면 무표정
+              break;
+      }
+  }
+
   public startMotionWithEmotion(emotion: string): void {
     const model: LAppModel = this._models.at(0);
     if (!model) {
@@ -67,10 +178,10 @@ export class LAppLive2DManager {
   }
 
   /**
-   * 지정된 파라미터 ID의 값을 설정합니다. (고정값 저장)
+   * 지정된 파라미터 ID의 값을 설정합니다. (lerp로 부드럽게 전환)
    * @param paramId 파라미터 ID 문자열 (예: "ParamAngleX")
    * @param value 설정할 값
-   * @param weight 가중치 (기본값 1.0) - 현재 구현에서는 무시됨 (항상 Override)
+   * @param weight 가중치 (기본값 1.0) - 현재 구현에서는 무시됨
    */
   public setParameterValue(paramId: string, value: number, weight: number = 1.0): void {
     const model: LAppModel = this._models.at(0);
@@ -78,14 +189,46 @@ export class LAppLive2DManager {
       return;
     }
 
-    // 모델에 오버라이드 값 설정 (영구 저장)
+    // lerp 시스템으로 부드럽게 전환 (즉시 적용 제거)
     model.setParameterOverride(paramId, value);
+  }
 
-    // 즉시 적용도 시도 (모델 로드 완료 상태라면)
-    if (model.getModel()) {
-      const id = CubismFramework.getIdManager().getId(paramId);
-      model.getModel().setParameterValueById(id, value, weight);
+  /**
+   * 매핑된 이름으로 모션 재생 (config.json의 motionMap 사용)
+   * @param motionName 모션 이름 (예: "인사", "끄덕임")
+   * @returns 재생 성공 여부
+   */
+  public playMappedMotion(motionName: string): boolean {
+    if (!this._modelConfig?.motionMap) {
+      console.warn('[Manager] No motionMap in config');
+      return false;
     }
+    
+    const motionInfo = this._modelConfig.motionMap[motionName];
+    if (!motionInfo) {
+      console.warn(`[Manager] Unknown motion name: ${motionName}`);
+      return false;
+    }
+    
+    this.startMotion(motionInfo.group, motionInfo.index, motionInfo.priority ?? 2);
+    return true;
+  }
+
+  /**
+   * 모션 재생
+   * @param group 모션 그룹 이름 (예: "Idle", "TapBody")
+   * @param index 모션 인덱스 (해당 그룹 내 몇 번째 모션)
+   * @param priority 우선순위 (1: 낮음, 2: 보통, 3: 높음)
+   */
+  public startMotion(group: string, index: number = 0, priority: number = 2): void {
+    const model: LAppModel = this._models.at(0);
+    if (!model) {
+      console.warn('[Manager] No model loaded');
+      return;
+    }
+    
+    console.log(`[Manager] startMotion: group=${group}, index=${index}, priority=${priority}`);
+    model.startMotion(group, index, priority);
   }
 
   /**
