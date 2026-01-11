@@ -1,11 +1,12 @@
-// src/components/Navbar.tsx
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
+import { initiateKakaoLogin, kakaoLogout, isLoggedIn } from '@/utils';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const getCurrentPage = () => {
     const path = location.pathname;
@@ -16,10 +17,18 @@ export const Navbar: React.FC = () => {
   };
 
   const currentPage = getCurrentPage();
+  const loggedIn = isLoggedIn();
 
   const handleLogin = () => {
-    console.log('로그인 버튼 클릭');
-    alert('로그인 기능은 준비중입니다.');
+    // 현재 페이지로 돌아오도록 설정
+    initiateKakaoLogin(location.pathname);
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      kakaoLogout();
+      navigate('/');
+    }
   };
 
   return (
@@ -40,7 +49,14 @@ export const Navbar: React.FC = () => {
         </NavMenu>
       </NavLeft>
       
-      <LoginButton onClick={handleLogin}>로그인</LoginButton>
+      {loggedIn ? (
+        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+      ) : (
+        <LoginButton onClick={handleLogin}>
+          <KakaoIcon />
+          카카오 로그인
+        </LoginButton>
+      )}
     </Nav>
   );
 };
@@ -98,6 +114,34 @@ const NavLink = styled(Link)<{ $active: boolean }>`
 `;
 
 const LoginButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.md};
+  border: 2px solid #FEE500;
+  border-radius: ${LAYOUT.borderRadius.lg};
+  background-color: transparent;
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.sm};
+  font-weight: ${FONTS.weight.medium};
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #FEE500;
+    color: #000000;
+    
+    svg path {
+      fill: #000000;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const LogoutButton = styled.button`
   padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.md};
   border: 2px solid ${COLORS.accent.primary};
   border-radius: ${LAYOUT.borderRadius.lg};
@@ -117,3 +161,12 @@ const LoginButton = styled.button`
     transform: scale(0.98);
   }
 `;
+
+const KakaoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3Z" 
+      fill="#FEE500"
+    />
+  </svg>
+);

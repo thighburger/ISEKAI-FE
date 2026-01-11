@@ -10,6 +10,7 @@ export const Router = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/create-chat" element={<CreateChatPage />} />
             <Route path="/my-characters" element={<HomePage title="내 캐릭터" isMyCharacters={true} />}  />
+            <Route path="/auth/success" element={<HomePage />} />
         </Routes>
     );
 };
