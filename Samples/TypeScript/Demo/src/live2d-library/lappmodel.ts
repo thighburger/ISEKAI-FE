@@ -565,13 +565,6 @@ export class LAppModel extends CubismUserModel {
     this._model.saveParameters(); // 状態を保存
     // ------------------------------------------------------------------------------------
 
-    // 깜박임
-    if (!motionUpdated) {
-      if (this._eyeBlink != null) {
-        // 메인 모션의 업데이트가 없으면
-        this._eyeBlink.updateParameters(this._model, deltaTimeSeconds); // 目パチ
-      }
-    }
 
     if (this._expressionManager != null) {
       this._expressionManager.updateMotion(this._model, deltaTimeSeconds); // 表情でパラメータ更新（相対変化）
@@ -600,7 +593,12 @@ export class LAppModel extends CubismUserModel {
       this._physics.evaluate(this._model, deltaTimeSeconds);
     }
 
-    // 립 동기화 설정
+    // --------------------------------------------------------------------------
+    // 외부 파라미터 적용 (lerp로 부드럽게 전환) - 립싱크/눈깜빡임 전에 실행
+    // --------------------------------------------------------------------------
+    this.updateParameterTransitions(deltaTimeSeconds);
+
+    // 립 동기화 설정 (lerp 후에 실행되어 값을 더할 수 있음)
     if (this._lipsync) {
       let value = 0.0; // リアルタイムでリップシンクを行う場合、システムから音量を取得して、0~1の範囲で値を入力します。
 
@@ -626,6 +624,10 @@ export class LAppModel extends CubismUserModel {
       for (let i = 0; i < this._lipSyncIds.getSize(); ++i) {
         this._model.addParameterValueById(this._lipSyncIds.at(i), value, 1.0);
       }
+
+      // ParamJawOpen 파라미터가 있는 경우 (ARKit 호환 모델 등) 립싱크 값 적용
+      const jawOpenId = CubismFramework.getIdManager().getId("ParamJawOpen");
+      this._model.addParameterValueById(jawOpenId, value, 1.0);
     }
 
     // 설정 설정
@@ -634,17 +636,15 @@ export class LAppModel extends CubismUserModel {
     }
 
     // --------------------------------------------------------------------------
+    // 눈 깜빡임 (립싱크와 동일한 방식 - 기존 파라미터 값에 더함)
     // --------------------------------------------------------------------------
-    // 외부 강제 파라미터 적용 (매 프레임 고정)
-    if (this._parameterOverrides.size > 0) {
-      this._parameterOverrides.forEach((value, id) => {
-        // 문자열 ID를 CubismId로 변환
-        const cubismId = CubismFramework.getIdManager().getId(id);
-        this._model.setParameterValueById(cubismId, value, 1.0);
-      });
-    }
-    // --------------------------------------------------------------------------
-    // --------------------------------------------------------------------------
+    const blinkValue = this.updateEyeBlink(deltaTimeSeconds);
+    
+    // ParamEyeLOpen, ParamEyeROpen 파라미터에 깜빡임 값 적용 (립싱크와 동일한 방식)
+    const eyeLOpenId = CubismFramework.getIdManager().getId("ParamEyeLOpen");
+    const eyeROpenId = CubismFramework.getIdManager().getId("ParamEyeROpen");
+    this._model.addParameterValueById(eyeLOpenId, -blinkValue);
+    this._model.addParameterValueById(eyeROpenId, -blinkValue);
 
     this._model.update();
   }
@@ -654,18 +654,178 @@ export class LAppModel extends CubismUserModel {
    */
   public setLipSyncValue(value: number): void {
       this._userLipSyncValue = value;
+      if (this._userLipSyncValue > 0) {
+        this._lipsync = true;
+      }
   }
   
   private _userLipSyncValue: number = -1; // -1이면 내부 로직 사용
   private _resources: Map<string, ArrayBuffer> | null = null;
-  // 파라미터 강제 고정용 맵
-  private _parameterOverrides: Map<string, number> = new Map<string, number>();
-
+  
+  // ============================================================================
+  // 파라미터 부드러운 전환 (Lerp) 시스템
+  // ============================================================================
+  private _parameterTargets: Map<string, number> = new Map<string, number>();   // 목표 값
+  private _parameterCurrents: Map<string, number> = new Map<string, number>();  // 현재 값
+  private _parameterTransitionSpeed: number = 5.0;  // 전환 속도 (높을수록 빠름)
+  
   /**
-   * 파라미터 값을 강제로 고정 설정합니다. (매 프레임 적용됨)
+   * 파라미터 목표 값 설정 (lerp로 부드럽게 전환됨)
+   * @param id 파라미터 ID
+   * @param targetValue 목표 값
+   */
+  public setParameterTarget(id: string, targetValue: number): void {
+    this._parameterTargets.set(id, targetValue);
+    
+    // 현재 값이 없으면 모델의 현재 파라미터 값으로 초기화 (0이 아닌 실제 값)
+    if (!this._parameterCurrents.has(id)) {
+      // 모델에서 현재 파라미터 값 가져오기
+      const cubismId = CubismFramework.getIdManager().getId(id);
+      const modelCurrentValue = this._model.getParameterValueById(cubismId);
+      this._parameterCurrents.set(id, modelCurrentValue);
+    }
+  }
+  
+  /**
+   * 모든 파라미터를 기본값(0)으로 lerp 전환
+   * 현재 설정된 모든 파라미터의 목표값을 0으로 변경
+   */
+  public clearParameterTargets(): void {
+    // 기존 목표값들을 0으로 변경하여 부드럽게 기본 상태로 전환
+    this._parameterTargets.forEach((_, id) => {
+      this._parameterTargets.set(id, 0);
+    });
+  }
+  
+  /**
+   * 모든 파라미터 완전 초기화 (목표 + 현재 값 모두, 즉시 리셋)
+   */
+  public resetAllParameters(): void {
+    this._parameterTargets.clear();
+    this._parameterCurrents.clear();
+  }
+  
+  /**
+   * 전환 속도 설정
+   * @param speed 속도 (1~10 권장, 기본값 5)
+   */
+  public setTransitionSpeed(speed: number): void {
+    this._parameterTransitionSpeed = Math.max(0.1, speed);
+  }
+  
+  /**
+   * 파라미터 전환 업데이트 (update()에서 호출)
+   * 현재 값을 목표 값으로 lerp로 전환
+   * 목표값이 0이고 전환 완료 시 맵에서 제거 (다른 시스템이 제어 가능하도록)
+   */
+  private updateParameterTransitions(deltaTimeSeconds: number): void {
+    if (this._parameterTargets.size === 0) return;
+    
+    const lerpFactor = Math.min(1.0, this._parameterTransitionSpeed * deltaTimeSeconds);
+    const idsToRemove: string[] = [];
+    
+    this._parameterTargets.forEach((targetValue, id) => {
+      // 현재 값 가져오기
+      let currentValue = this._parameterCurrents.get(id);
+      if (currentValue === undefined) {
+        // 모델에서 현재 값 가져오기
+        const cubismId = CubismFramework.getIdManager().getId(id);
+        currentValue = this._model.getParameterValueById(cubismId);
+        this._parameterCurrents.set(id, currentValue);
+      }
+      
+      // Lerp: current + (target - current) * factor
+      const newValue = currentValue + (targetValue - currentValue) * lerpFactor;
+      this._parameterCurrents.set(id, newValue);
+      
+      // 모델에 적용
+      const cubismId = CubismFramework.getIdManager().getId(id);
+      this._model.setParameterValueById(cubismId, newValue, 1.0);
+      
+      // 목표값이 0이고 lerp 완료 시 제거 예약 (다른 시스템이 제어 가능하도록)
+      if (targetValue === 0 && Math.abs(newValue) < 0.01) {
+        idsToRemove.push(id);
+      }
+    });
+    
+    // lerp 완료된 0-목표 파라미터 제거
+    idsToRemove.forEach(id => {
+      this._parameterTargets.delete(id);
+      this._parameterCurrents.delete(id);
+    });
+  }
+  
+  // 기존 호환성을 위해 유지 (내부적으로 lerp 시스템 사용)
+  /**
+   * 파라미터 값 설정 (lerp로 부드럽게 전환됨)
+   * @deprecated setParameterTarget() 사용 권장
    */
   public setParameterOverride(id: string, value: number): void {
-      this._parameterOverrides.set(id, value);
+    this.setParameterTarget(id, value);
+  }
+
+  public clearParameterOverrides(): void {
+    this.clearParameterTargets();
+  }
+  
+  // ============================================================================
+  // 눈 깜빡임 관련 (립싱크와 동일한 구조)
+  // ============================================================================
+  private _blinkTimer: number = 0;                              // 다음 깜빡임까지 타이머
+  private _nextBlinkTime: number = 3.0   // 다음 깜빡임까지 간격 (3초)
+  private _isBlinking: boolean = false;                         // 현재 깜빡이는 중인지
+  private _blinkPhase: number = 0;                              // 깜빡임 애니메이션 진행 시간
+  
+  /**
+   * 눈 깜빡임 업데이트 (update()에서 호출)
+   * 립싱크와 동일한 패턴: 현재 깜빡임으로 인한 눈 감김 정도(0~1)를 반환
+   * @param deltaTimeSeconds 프레임 간 시간 차이
+   * @returns blinkAmount (0: 눈 뜸, 1: 눈 완전히 감음)
+   */
+  private updateEyeBlink(deltaTimeSeconds: number): number {
+    let blinkAmount = 0.0;
+    
+    if (!this._isBlinking) {
+      // 대기 상태: 다음 깜빡임까지 타이머 증가
+      this._blinkTimer += deltaTimeSeconds;
+      
+      if (this._blinkTimer >= this._nextBlinkTime) {
+        // 깜빡임 시작
+        this._isBlinking = true;
+        this._blinkPhase = 0;
+        this._blinkTimer = 0;
+      }
+    } else {
+      // 깜빡임 중: 애니메이션 진행
+      this._blinkPhase += deltaTimeSeconds;
+      
+      const blinkDuration = 0.4;           // 깜빡임 총 시간 (초)
+      const closeTime = blinkDuration * 0.4; // 눈 감는 시간 (40%)
+      const openTime = blinkDuration * 0.6;  // 눈 뜨는 시간 (60%)
+      
+      if (this._blinkPhase < closeTime) {
+        // 눈 감는 중: 0 → 1
+        blinkAmount = this._blinkPhase / closeTime;
+      } else if (this._blinkPhase < blinkDuration) {
+        // 눈 뜨는 중: 1 → 0
+        blinkAmount = 1.0 - ((this._blinkPhase - closeTime) / openTime);
+      } else {
+        // 깜빡임 완료: 다음 깜빡임 예약
+        this._isBlinking = false;
+        this._blinkPhase = 0;
+        this._nextBlinkTime = 2.0 + Math.random() * 3.0;
+        blinkAmount = 0.0;
+      }
+    }
+    
+    return blinkAmount;
+  }
+
+  /**
+   * 모델 설정 가져오기
+   */
+  public getModelSetting(): ICubismModelSetting {
+    return this._modelSetting;
   }
 
   /**
