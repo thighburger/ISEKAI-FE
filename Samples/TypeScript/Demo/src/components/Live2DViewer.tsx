@@ -6,14 +6,21 @@ import { useLive2D } from '../hooks/useLive2D';
 interface Live2DViewerProps {
   modelUrl: string;
   getLipSyncValue?: () => number;
+  emotion?: string;           // 감정 (예: "행복", "슬픔")
+  motion?: string;            // 모션 이름 (예: "인사", "끄덕임")
 }
 
-const Live2DViewer = ({ modelUrl, getLipSyncValue }: Live2DViewerProps) => {
+const Live2DViewer = ({ 
+  modelUrl, 
+  getLipSyncValue, 
+  emotion="중립",
+  motion="대기"
+}: Live2DViewerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [resources, setResources] = useState<Map<string, ArrayBuffer> | undefined>(undefined);
   const [modelInfo, setModelInfo] = useState<{ path: string; fileName: string } | null>(null);
 
-  // 2. ZIP 파일 로드 (기존 로직 동일)
+  // ZIP 파일 로드
   useEffect(() => {
     const fetchZip = async () => {
       if (!modelUrl) return;
@@ -50,7 +57,7 @@ const Live2DViewer = ({ modelUrl, getLipSyncValue }: Live2DViewerProps) => {
     fetchZip();
   }, [modelUrl]);
 
-  // 3. Live2D 매니저 초기화
+  // Live2D 매니저 초기화
   const { manager } = useLive2D({
     containerRef,
     modelPath: modelInfo?.path || '',
@@ -59,14 +66,15 @@ const Live2DViewer = ({ modelUrl, getLipSyncValue }: Live2DViewerProps) => {
     getLipSyncValue
   });
 
-  // 5. config.json 로드 및 파라미터 적용
+
+  // config.json 로드 및 파라미터 적용
   useEffect(() => {
     if (!manager || !resources) return;
 
     const loadAndApplyConfig = async () => {
       let configData: any = null;
 
-      // 1. Resources (ZIP)에서 config.json 찾기
+      // Resources (ZIP)에서 config.json 찾기
       const configPath = Array.from(resources.keys()).find(key => key.endsWith('config.json'));
 
       if (configPath) {
@@ -75,26 +83,26 @@ const Live2DViewer = ({ modelUrl, getLipSyncValue }: Live2DViewerProps) => {
           if (content) {
             const text = new TextDecoder().decode(content);
             configData = JSON.parse(text);
-            console.log('configData', configData);
+            console.log('[Live2DViewer] configData:', configData);
           }
         } catch (e) {
           console.error('[Live2DViewer] Failed to parse config.json from resources:', e);
         }
       }
-      // 2. 없으면 modelURL 경로 기준으로 fetch 시도 (옵션)
-      else if (modelUrl) {
-        // modelUrl이 .zip으로 끝난다면, 같은 폴더의 config.json을 찾거나 해야 함.
-        // 여기서는 ZIP 내부에 있을 확률이 높으므로 생략하거나, 필요시 구현.
-      }
 
-      if (configData && configData.setparameter) {
-        const parameters = configData.setparameter;
-        console.log('[Live2DViewer] Applying parameters from config.json:', parameters);
+      if (configData) {
+        // config 전체를 manager에 전달 (motionMap 포함)
+        manager.setModelConfig(configData);
+        
+        // 파라미터 적용
+        if (configData.setparameter) {
+          const parameters = configData.setparameter;
+          console.log('[Live2DViewer] Applying parameters from config.json:', parameters);
 
-        // 이제 manager가 값을 기억하므로 루프 없이 한 번만 설정하면 됩니다.
-        for (let param in parameters) {
-          console.log(`Setting parameter: ${param} = ${parameters[param]}`);
-          manager.setParameterValue(param, parameters[param]);
+          for (let param in parameters) {
+            console.log(`Setting parameter: ${param} = ${parameters[param]}`);
+            manager.setParameterValue(param, parameters[param]);
+          }
         }
       }
     };
@@ -102,7 +110,26 @@ const Live2DViewer = ({ modelUrl, getLipSyncValue }: Live2DViewerProps) => {
     loadAndApplyConfig();
   }, [manager, resources]);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }} />;
+  // 감정 변화 감지 및 적용
+  useEffect(() => {
+    if (manager && emotion) {
+      manager.applyEmotion(emotion);
+    }
+  }, [manager, emotion]);
+
+  // 모션 재생 (motion prop이 변경될 때)
+  useEffect(() => {
+    if (manager && motion) {
+      console.log(`[Live2DViewer] Playing motion: ${motion}`);
+      manager.playMappedMotion(motion);
+    }
+  }, [manager, motion]);
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
 };
 
 export default Live2DViewer;
