@@ -1,11 +1,12 @@
-// src/components/Navbar.tsx
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
+import { initiateKakaoLogin, kakaoLogout, isLoggedIn } from '@/utils/kakaoAuth';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const getCurrentPage = () => {
     const path = location.pathname;
@@ -16,10 +17,17 @@ export const Navbar: React.FC = () => {
   };
 
   const currentPage = getCurrentPage();
+  const loggedIn = isLoggedIn();
 
   const handleLogin = () => {
-    console.log('로그인 버튼 클릭');
-    alert('로그인 기능은 준비중입니다.');
+    initiateKakaoLogin(location.pathname);
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      kakaoLogout();
+      navigate('/');
+    }
   };
 
   return (
@@ -40,7 +48,13 @@ export const Navbar: React.FC = () => {
         </NavMenu>
       </NavLeft>
       
-      <LoginButton onClick={handleLogin}>로그인</LoginButton>
+      {loggedIn ? (
+        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+      ) : (
+        <KakaoLoginButton onClick={handleLogin}>
+          <img src="src/assets/images/kakao_login_medium.png" alt="카카오 로그인" />
+        </KakaoLoginButton>
+      )}
     </Nav>
   );
 };
@@ -97,10 +111,35 @@ const NavLink = styled(Link)<{ $active: boolean }>`
   }
 `;
 
-const LoginButton = styled.button`
+// 카카오 로그인 버튼 (이미지 사용)
+const KakaoLoginButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+  
+  img {
+    border-radius: ${LAYOUT.borderRadius.md};
+    display: block;
+    height: 36px;
+    width: auto;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+// 로그아웃 버튼 (기존 스타일 유지)
+const LogoutButton = styled.button`
   padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.md};
   border: 2px solid ${COLORS.accent.primary};
-  border-radius: ${LAYOUT.borderRadius.lg};
+  border-radius: ${LAYOUT.borderRadius.md};
   background-color: transparent;
   color: ${COLORS.text.primary};
   font-size: ${FONTS.size.sm};
