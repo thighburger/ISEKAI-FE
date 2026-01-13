@@ -60,18 +60,18 @@ export const CharacterModal: React.FC<CharacterModalProps> = ({
       <ModalContainer $active={isOpen}>
         <CloseButton onClick={onClose} />
         
-        <ModalImage $hasImage={!!character.imageUrl}>
-          {character.imageUrl ? (
-            <img src={character.imageUrl} alt={character.title} />
+        <ModalImage $hasImage={!!character.thumbnailUrl}>
+          {character.thumbnailUrl ? (
+            <img src={character.thumbnailUrl} alt={character.name} />
           ) : (
-            <span>{character.title}</span>
+            <span>{character.name}</span>
           )}
         </ModalImage>
 
         <ModalContent>
           <ModalTextContent>
-            <ModalTitle>{character.title}</ModalTitle>
-            <ModalDescription>{character.description}</ModalDescription>
+            <ModalTitle>{character.name}</ModalTitle>
+            <ModalDescription>{character.persona}</ModalDescription>
           </ModalTextContent>
 
           <StartChatButton onClick={handleStartChat}>

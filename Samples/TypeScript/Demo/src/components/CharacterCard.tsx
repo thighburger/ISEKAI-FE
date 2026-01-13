@@ -16,20 +16,17 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
 
   return (
     <CardContainer onClick={handleClick}>
-      <CardImage $hasImage={!!character.imageUrl}>
-        {character.imageUrl ? (
-          <img src={character.imageUrl} alt={character.title} />
+      <CardImage $hasImage={!!character.thumbnailUrl}>
+        {character.thumbnailUrl ? (
+          <img src={character.thumbnailUrl} alt={character.name} />
         ) : (
-          <span>{character.title}</span>
-        )}
-        {character.badge && (
-          <Badge>{character.badge}</Badge>
+          <span>{character.name}</span>
         )}
       </CardImage>
       
       <CardContent>
-        <CardTitle>{character.title}</CardTitle>
-        <CardDescription>{character.description}</CardDescription>
+        <CardTitle>{character.name}</CardTitle>
+        <CardDescription>{character.persona}</CardDescription>
       </CardContent>
     </CardContainer>
   );

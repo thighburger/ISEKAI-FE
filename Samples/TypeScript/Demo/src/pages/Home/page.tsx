@@ -4,7 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import { CharacterCard } from '@/components/CharacterCard';
 import { CharacterModal } from '@/components/CharacterModal';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
-import { Character, apiCharacterToCharacter } from '@/pages/Home/types/character';
+import { Character } from '@/types/character';
 import { useCharacters } from '@/pages/Home/hooks/index';
 
 interface HomeProps {
@@ -19,14 +19,11 @@ const Home: React.FC<HomeProps> = ({
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // API로부터 캐릭터 목록 가져오기
   const { data, isLoading, error } = useCharacters({ page: 0, size: 10 });
 
-  // API 데이터를 Character 타입으로 변환
   const characters: Character[] = data?.content
     ? data.content
-        .filter(apiChar => !isMyCharacters || apiChar.isAuthorMe) // 내 캐릭터 필터링
-        .map(apiCharacterToCharacter)
+        .filter(apiChar => !isMyCharacters || apiChar.isAuthorMe)
     : [];
 
   const handleCardClick = (character: Character) => {
@@ -39,11 +36,10 @@ const Home: React.FC<HomeProps> = ({
   };
 
   const handleStartChat = (character: Character) => {
-    console.log('대화 시작:', character.title);
+    console.log('대화 시작:', character.name);
     // 추후 채팅 페이지로 이동 또는 채팅 시작 로직
   };
 
-  // 로딩 상태
   if (isLoading) {
     return (
       <>
@@ -56,16 +52,13 @@ const Home: React.FC<HomeProps> = ({
     );
   }
 
-  // 에러 상태
   if (error) {
     console.error('캐릭터 목록 조회 에러:', error);
     
-    // axios 에러 타입 체크
     const isAxiosError = (err: unknown): err is { response: { status: number; data: unknown } } => {
       return typeof err === 'object' && err !== null && 'response' in err;
     };
     
-    // axios 에러인 경우 상세 정보 출력
     if (isAxiosError(error)) {
       console.error('응답 상태:', error.response.status);
       console.error('응답 데이터:', error.response.data);
