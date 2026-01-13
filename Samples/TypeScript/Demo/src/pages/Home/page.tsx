@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Navbar } from '@/components/Navbar';
@@ -61,8 +60,13 @@ const Home: React.FC<HomeProps> = ({
   if (error) {
     console.error('캐릭터 목록 조회 에러:', error);
     
+    // axios 에러 타입 체크
+    const isAxiosError = (err: unknown): err is { response: { status: number; data: unknown } } => {
+      return typeof err === 'object' && err !== null && 'response' in err;
+    };
+    
     // axios 에러인 경우 상세 정보 출력
-    if ('response' in error && error.response) {
+    if (isAxiosError(error)) {
       console.error('응답 상태:', error.response.status);
       console.error('응답 데이터:', error.response.data);
     }
@@ -75,7 +79,7 @@ const Home: React.FC<HomeProps> = ({
           <ErrorMessage>
             <ErrorTitle>캐릭터를 불러오는데 실패했습니다</ErrorTitle>
             <ErrorDetails>
-              {'response' in error && error.response ? (
+              {isAxiosError(error) ? (
                 <>
                   <p>상태 코드: {error.response.status}</p>
                   {error.response.status === 500 && (
@@ -86,7 +90,7 @@ const Home: React.FC<HomeProps> = ({
                   )}
                 </>
               ) : (
-                <p>{error.message}</p>
+                <p>{error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'}</p>
               )}
             </ErrorDetails>
           </ErrorMessage>
