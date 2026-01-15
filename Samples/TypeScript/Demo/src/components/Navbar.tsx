@@ -39,12 +39,16 @@ export const Navbar: React.FC = () => {
           <NavLink to="/" $active={currentPage === 'home'}>
             홈
           </NavLink>
-          <NavLink to="/create-chat" $active={currentPage === 'create-chat'}>
-            캐릭터 제작
-          </NavLink>
-          <NavLink to="/my-characters" $active={currentPage === 'my-characters'}>
-            내 캐릭터
-          </NavLink>
+          {loggedIn && (
+            <>
+              <NavLink to="/create-chat" $active={currentPage === 'create-chat'}>
+                캐릭터 제작
+              </NavLink>
+              <NavLink to="/my-characters" $active={currentPage === 'my-characters'}>
+                내 캐릭터
+              </NavLink>
+            </>
+          )}
         </NavMenu>
       </NavLeft>
       
