@@ -6,7 +6,7 @@ import Login from './Login/page';
 export const Router = () => {
     return (
         <Routes>
-            <Route path="/chatting" element={<ChattingPage />} />
+            <Route path="/chatting/:characterId" element={<ChattingPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/create-chat" element={<CreateChatPage />} />
             <Route path="/my-characters" element={<HomePage title="내 캐릭터" isMyCharacters={true} />}  />
