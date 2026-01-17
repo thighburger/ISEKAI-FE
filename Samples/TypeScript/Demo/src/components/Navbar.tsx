@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
 import { initiateKakaoLogin, kakaoLogout, isLoggedIn } from '@/utils/kakaoAuth';
+import logOutIcon from '@/assets/icons/log-out-outline.svg';
 import kakaoLoginImage from '@/assets/images/kakao_login_medium.png';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const userEmail = userInfo.email;
+  const userName = userInfo.nickname;
   
   const getCurrentPage = () => {
     const path = location.pathname;
@@ -20,6 +27,22 @@ export const Navbar: React.FC = () => {
   const currentPage = getCurrentPage();
   const loggedIn = isLoggedIn();
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   const handleLogin = () => {
     initiateKakaoLogin(location.pathname);
   };
@@ -27,8 +50,13 @@ export const Navbar: React.FC = () => {
   const handleLogout = () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       kakaoLogout();
+      setIsDropdownOpen(false);
       navigate('/');
     }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -54,10 +82,34 @@ export const Navbar: React.FC = () => {
       </NavLeft>
       
       {loggedIn ? (
-        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+        <ProfileContainer ref={dropdownRef}>
+          <ProfileButton onClick={toggleDropdown}>
+            <ProfileIcon>
+              {userName.charAt(0).toUpperCase()}
+            </ProfileIcon>
+          </ProfileButton>
+          
+          {isDropdownOpen && (
+            <DropdownMenu>
+              <UserInfo>
+                <UserName>{userName}</UserName>
+                <UserEmail>{userEmail}</UserEmail>
+              </UserInfo>
+              
+              <Divider />
+              
+              <DropdownItem onClick={handleLogout}>
+                <LogoutIcon>
+                  <img src={logOutIcon} alt="" />
+                </LogoutIcon>
+                <span>로그아웃</span>
+              </DropdownItem>
+            </DropdownMenu>
+          )}
+        </ProfileContainer>
       ) : (
         <KakaoLoginButton onClick={handleLogin}>
-          <img src={kakaoLoginImage}  alt="카카오 로그인" />
+          <img src={kakaoLoginImage} alt="카카오 로그인" />
         </KakaoLoginButton>
       )}
     </Nav>
@@ -116,7 +168,131 @@ const NavLink = styled(Link)<{ $active: boolean }>`
   }
 `;
 
-// 카카오 로그인 버튼 (이미지 사용)
+const ProfileContainer = styled.div`
+  position: relative;
+`;
+
+const ProfileButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const ProfileIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, ${COLORS.accent.primary} 0%, ${COLORS.accent.secondary} 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.md};
+  font-weight: ${FONTS.weight.semibold};
+  user-select: none;
+`;
+
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: ${COLORS.background.secondary};
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: ${LAYOUT.borderRadius.lg};
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 1001;
+  animation: fadeIn 0.15s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const UserInfo = styled.div`
+  padding: ${LAYOUT.spacing.md} ${LAYOUT.spacing.lg};
+  background-color: rgba(255, 255, 255, 0.03);
+`;
+
+const UserName = styled.div`
+  font-size: ${FONTS.size.sm};
+  font-weight: ${FONTS.weight.semibold};
+  color: ${COLORS.text.primary};
+  margin-bottom: 4px;
+`;
+
+const UserEmail = styled.div`
+  font-size: ${FONTS.size.xs};
+  color: ${COLORS.text.secondary};
+  opacity: 0.7;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: ${LAYOUT.spacing.xs} 0;
+`;
+
+const DropdownItem = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: ${LAYOUT.spacing.sm};
+  padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.lg};
+  background: none;
+  border: none;
+  color: ${COLORS.text.primary};
+  font-size: ${FONTS.size.sm};
+  font-weight: ${FONTS.weight.medium};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  &:active {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  span {
+    flex: 1;
+  }
+`;
+
+const LogoutIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${COLORS.text.secondary};
+  
+  img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(0%) hue-rotate(173deg) brightness(93%) contrast(89%);
+  }
+`;
+
 const KakaoLoginButton = styled.button`
   background: none;
   border: none;
@@ -133,28 +309,6 @@ const KakaoLoginButton = styled.button`
 
   &:hover {
     opacity: 0.8;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-`;
-
-// 로그아웃 버튼 (기존 스타일 유지)
-const LogoutButton = styled.button`
-  padding: ${LAYOUT.spacing.sm} ${LAYOUT.spacing.md};
-  border: 2px solid ${COLORS.accent.primary};
-  border-radius: ${LAYOUT.borderRadius.md};
-  background-color: transparent;
-  color: ${COLORS.text.primary};
-  font-size: ${FONTS.size.sm};
-  font-weight: ${FONTS.weight.medium};
-  transition: all 0.3s ease-out;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${COLORS.accent.primary};
-    color: ${COLORS.text.primary};
   }
 
   &:active {
