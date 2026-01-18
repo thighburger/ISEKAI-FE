@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Live2DViewer from '@/components/Live2DViewer';
 import { useWebSocket } from '@/hooks/useWebSocket';
@@ -9,10 +9,23 @@ import OverlayButton from '@/components/OverlayButton';
 import OverlayContainer from '@/components/OverlayContainer';
 import { FONTS } from '@/constants';
 import { ChatMessage } from '@/types/chat';
+import { Character } from '@/types/character';
 
 const ChattingPage = () => {
   const wsUrl = import.meta.env.VITE_WS_SERVER_URL;
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Character 정보 가져오기
+  const character = location.state?.character as Character | undefined;
+
+  // Character 정보가 없으면 홈으로 리다이렉트
+  useEffect(() => {
+    if (!character) {
+      console.warn('캐릭터 정보가 없습니다. 홈으로 이동합니다.');
+      navigate('/');
+    }
+  }, [character, navigate]);
 
   // React 상태로 채팅 메시지 관리
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -35,11 +48,11 @@ const ChattingPage = () => {
   // WebSocket 이벤트 핸들러
   const handleUserSTT = useCallback((text: string) => {
     addMessage('user', text);
-  }, []);
+  }, [addMessage]);
 
   const handleSubtitle = useCallback((text: string) => {
     addMessage('ai', text);
-  }, []);
+  }, [addMessage]);
 
   // WebSocket 연결 및 오디오 스트리밍
   const { getCurrentRms } = useWebSocket({
@@ -83,10 +96,15 @@ const ChattingPage = () => {
     checkPermission();
   }, []);
 
+  // Character가 없으면 빈 화면 반환 (리다이렉트 중)
+  if (!character) {
+    return null;
+  }
+
   return (
     <PageContainer>
-      {/* 1. 배경 이미지 */}
-      <Background />
+      {/* 1. 배경 이미지 - Character의 backgroundUrl 사용 */}
+      <Background $backgroundUrl={character.backgroundUrl} />
 
       {/* 2. 뒤로가기 버튼 */}
       <BackButtonWrapper>
@@ -104,11 +122,11 @@ const ChattingPage = () => {
         </OverlayContainer>
       </ZoomControlsWrapper>
 
-      {/* 4. Live2D 컨테이너 (좌측 50%) */}
+      {/* 4. Live2D 컨테이너 (좌측 50%) - Character의 live2dModelUrl 사용 */}
       <Live2DContainer>
         <Live2DWrapper>
           <Live2DViewer 
-            modelUrl="/Resources/live2d_model.zip" 
+            modelUrl={character.live2dModelUrl}
             getLipSyncValue={getCurrentRms} 
             zoom={zoomLevel}
           />
@@ -140,13 +158,13 @@ const PageContainer = styled.section`
   background-color: #000;
 `;
 
-const Background = styled.div`
+const Background = styled.div<{ $backgroundUrl?: string }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/Resources/anime-school-background.jpg');
+  background-image: url(${props => props.$backgroundUrl || '/Resources/anime-school-background.jpg'});
   background-size: cover;
   background-position: center;
   filter: blur(3px) brightness(1);

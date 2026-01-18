@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Navbar } from '@/components/Navbar';
+import { useNavigate } from 'react-router-dom';
 import { CharacterCard } from '@/components/CharacterCard';
 import { CharacterModal } from '@/components/CharacterModal';
 import { COLORS, LAYOUT, FONTS } from '@/constants';
@@ -16,6 +17,7 @@ const Home: React.FC<HomeProps> = ({
   title = '캐릭터 모아보기', 
   isMyCharacters = false 
 }) => {
+  const navigate = useNavigate();
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,8 +38,8 @@ const Home: React.FC<HomeProps> = ({
   };
 
   const handleStartChat = (character: Character) => {
-    console.log('대화 시작:', character.name);
-    // 추후 채팅 페이지로 이동 또는 채팅 시작 로직
+    navigate('/chatting', { state: { character }});
+    console.log(character)
   };
 
   if (isLoading) {

@@ -4,6 +4,8 @@ export interface Character {
   persona: string;
   thumbnailUrl?: string;
   isAuthorMe: boolean;
+  backgroundUrl?: string;
+  live2dModelUrl?: string;
 }
 
 export interface CharacterCardProps {
