@@ -2,13 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import JSZip from 'jszip';
 import { useLive2D } from '../hooks/useLive2D';
+import { MotionMapItem } from '@/live2d-library/lapplive2dmanager';
 
 interface Live2DViewerProps {
   modelUrl: string;
   getLipSyncValue?: () => number;
   expression?: string;           // 감정 (예: "행복", "슬픔")
-  motion?: string;            // 모션 이름 (예: "인사", "끄덕임")
-  zoom?: number;              // 줌 레벨 (1.0 = 기본, 2.0 = 200% 확대)
+  motion?: string;               // 모션 이름 (예: "인사", "끄덕임")
+  zoom?: number;                 // 줌 레벨 (1.0 = 기본, 2.0 = 200% 확대)
+  // 외부에서 config 전달 (ZIP 내부에 config.json이 없을 경우 사용)
+  motionMap?: { [key: string]: MotionMapItem };
+  setparameter?: { [key: string]: number };
 }
 
 const Live2DViewer = ({ 
@@ -69,7 +73,15 @@ const Live2DViewer = ({
   });
 
 
-  // config.json 로드 및 파라미터 적용
+  // 기본 motionMap (하드코딩)
+  const DEFAULT_MOTION_MAP = {
+    "기본": { group: "idle", index: 0 },
+    "듣기": { group: "listen", index: 1 },
+    "말하기": { group: "speak", index: 1 },
+    "생각": { group: "think", index: 0 }
+  };
+
+  // config 적용 (ZIP 내부 config.json 또는 기본값 사용)
   useEffect(() => {
     if (!manager || !resources) return;
 
@@ -85,26 +97,26 @@ const Live2DViewer = ({
           if (content) {
             const text = new TextDecoder().decode(content);
             configData = JSON.parse(text);
-            console.log('[Live2DViewer] configData:', configData);
           }
         } catch (e) {
           console.error('[Live2DViewer] Failed to parse config.json from resources:', e);
         }
       }
 
-      if (configData) {
-        // config 전체를 manager에 전달 (motionMap 포함)
-        manager.setModelConfig(configData);
-        
-        // 파라미터 적용
-        if (configData.setparameter) {
-          const parameters = configData.setparameter;
-          console.log('[Live2DViewer] Applying parameters from config.json:', parameters);
+      // config.json에 motionMap이 없으면 기본값 병합
+      if (configData && !configData.motionMap) {
+        configData.motionMap = DEFAULT_MOTION_MAP;
+        console.log('[Live2DViewer] motionMap not found in config, using default');
+      }
 
-          for (let param in parameters) {
-            console.log(`Setting parameter: ${param} = ${parameters[param]}`);
-            manager.setParameterValue(param, parameters[param]);
-          }
+      // config 전체를 manager에 전달 (motionMap 포함)
+      manager.setModelConfig(configData);
+      
+      // 파라미터 적용
+      if (configData.setparameter) {
+        const parameters = configData.setparameter;
+        for (let param in parameters) {
+          manager.setParameterValue(param, parameters[param]);
         }
       }
     };
