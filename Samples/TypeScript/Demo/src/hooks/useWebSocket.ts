@@ -13,7 +13,6 @@ interface UseWebSocketReturn {
   isConnected: boolean;
   isServerReady: boolean;
   isMicActive: boolean;
-  isVoiceDetected: boolean;
   error: Error | null;
   getCurrentRms: () => number;
   sendTextMessage: (text: string) => void;
@@ -84,7 +83,6 @@ export const useWebSocket = ({
   // 마이크 훅
   const {
     isActive: isMicActive,
-    isVoiceDetected,
     start: startMic,
     stop: stopMic
   } = useMicrophone({
@@ -284,7 +282,6 @@ export const useWebSocket = ({
     isConnected,
     isServerReady,
     isMicActive,
-    isVoiceDetected,
     error,
     getCurrentRms,
     sendTextMessage,

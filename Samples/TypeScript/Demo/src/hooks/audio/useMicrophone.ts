@@ -2,26 +2,24 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 
 interface UseMicrophoneOptions {
   sampleRate?: number;
-  vadThreshold?: number;
-  noiseGate?: number;
   onAudioData?: (data: Float32Array) => void;
 }
 
 interface UseMicrophoneReturn {
   isActive: boolean;
-  isVoiceDetected: boolean;
   start: () => Promise<void>;
   stop: () => Promise<void>;
 }
 
+/**
+ * 마이크 훅 (Gemini Live용)
+ * VAD는 서버에서 처리하므로 클라이언트는 순수 오디오만 전송
+ */
 export const useMicrophone = ({
   sampleRate = 16000,
-  vadThreshold = 0.015,
-  noiseGate = 0.005,
   onAudioData
 }: UseMicrophoneOptions = {}): UseMicrophoneReturn => {
   const [isActive, setIsActive] = useState(false);
-  const [isVoiceDetected, setIsVoiceDetected] = useState(false);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -59,25 +57,15 @@ export const useMicrophone = ({
 
       const source = audioContext.createMediaStreamSource(stream);
 
-      // VAD AudioWorklet 로드
+      // AudioWorklet 로드
       await audioContext.audioWorklet.addModule('vad-audio-processor.js');
 
       const workletNode = new AudioWorkletNode(audioContext, 'vad-audio-processor');
       workletNodeRef.current = workletNode;
 
-      // VAD 설정 전송
-      workletNode.port.postMessage({
-        type: 'config',
-        vadThreshold,
-        noiseGate
-      });
-
-      // 메시지 핸들러
+      // 메시지 핸들러 - 오디오 데이터만 처리
       workletNode.port.onmessage = event => {
-        if (event.data.type === 'stats') {
-          setIsVoiceDetected(event.data.isActive);
-        } else if (event.data.type === 'audio') {
-          // AudioWorklet에서 이미 VAD 처리됨 (isActive일 때만 audio 메시지가 옴)
+        if (event.data.type === 'audio') {
           onAudioDataRef.current?.(event.data.buffer);
         }
       };
@@ -90,7 +78,7 @@ export const useMicrophone = ({
       console.error('[Microphone] 시작 실패:', error);
       throw error;
     }
-  }, [sampleRate, vadThreshold, noiseGate]);
+  }, [sampleRate]);
 
   const stop = useCallback(async () => {
     if (workletNodeRef.current) {
@@ -110,7 +98,6 @@ export const useMicrophone = ({
     }
 
     setIsActive(false);
-    setIsVoiceDetected(false);
     console.log('[Microphone] 중지됨');
   }, []);
 
@@ -123,5 +110,5 @@ export const useMicrophone = ({
     };
   }, []);
 
-  return { isActive, isVoiceDetected, start, stop };
+  return { isActive, start, stop };
 };
