@@ -52,7 +52,7 @@ const ChattingPage = () => {
   const { messages, isBotResponding, isBotThinking, currentEmotion, addUserTextMessage, loadChatHistory, handlers } = useChatMessages();
 
   // UI 상태
-  const [zoomLevel, setZoomLevel] = useState(1.0);
+  const [zoomLevel, setZoomLevel] = useState(2.5);
 
   // 1. WS 티켓 발급 (React Query 사용)
   const { data: ticket, isLoading: isTicketLoading } = useQuery({
